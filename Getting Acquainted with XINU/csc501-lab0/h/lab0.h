@@ -3,6 +3,11 @@
 
 #include <stdio.h>
 
+
 long zfunction();
+
+extern char etext, edata;
+
+void printsegaddress();
 
 #endif

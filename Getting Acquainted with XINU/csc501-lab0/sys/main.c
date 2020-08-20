@@ -17,5 +17,6 @@ int main()
 	ans = zfunction(num);
 	kprintf("num: 0x%x\n", num);
 	kprintf("ans: 0x%x\n", ans);
+	printsegaddress();
 	return 0;
 }
