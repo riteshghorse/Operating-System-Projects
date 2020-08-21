@@ -10,4 +10,5 @@ extern char etext, edata;
 
 void printsegaddress();
 
+void printtos();
 #endif
