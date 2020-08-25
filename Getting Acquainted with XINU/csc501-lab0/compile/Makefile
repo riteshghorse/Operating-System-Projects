@@ -50,7 +50,8 @@ SYS =	blkcmp.c	blkequ.c	main.c		stacktrace.c	\
 	sleep100.c	sleep1000.c	sreset.c	suspend.c	\
 	unsleep.c	userret.c	wait.c		wakeup.c	\
 	write.c		xdone.c		pci.c		shutdown.c	\
-	printsegaddress.c	printtos.c	printprocstks.c	
+	printsegaddress.c	printtos.c	printprocstks.c		\
+	printsyscallsummary.c	
 
 TTY =	ttyalloc.c	ttycntl.c	ttygetc.c	ttyiin.c	\
 	ttyinit.c	ttynew.c	ttyopen.c	ttyputc.c	\
@@ -401,7 +402,8 @@ getitem.o: ../sys/getitem.c /usr/include/stdc-predef.h ../h/conf.h \
 getmem.o: ../sys/getmem.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/stdio.h
 getpid.o: ../sys/getpid.c /usr/include/stdc-predef.h ../h/conf.h \
- ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h
+ ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/lab0.h \
+ ../h/stdio.h
 getprio.o: ../sys/getprio.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/stdio.h
 getstk.o: ../sys/getstk.c /usr/include/stdc-predef.h ../h/conf.h \
@@ -434,8 +436,7 @@ kprintf.o: ../sys/kprintf.c /usr/include/stdc-predef.h ../h/conf.h \
 kputc.o: ../sys/kputc.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/tty.h
 main.o: ../sys/main.c /usr/include/stdc-predef.h ../h/conf.h \
- ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/stdio.h \
- ../h/lab0.h
+ ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/stdio.h
 mark.o: ../sys/mark.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/mark.h
 mkpool.o: ../sys/mkpool.c /usr/include/stdc-predef.h ../h/conf.h \
@@ -458,7 +459,8 @@ printprocstks.o: ../sys/printprocstks.c /usr/include/stdc-predef.h \
 printsegaddress.o: ../sys/printsegaddress.c /usr/include/stdc-predef.h \
  ../h/lab0.h ../h/stdio.h
 printsyscallsummary.o: ../sys/printsyscallsummary.c \
- /usr/include/stdc-predef.h
+ /usr/include/stdc-predef.h ../h/conf.h ../h/kernel.h ../h/systypes.h \
+ ../h/mem.h ../h/proc.h ../h/stdio.h ../h/lab0.h
 printtos.o: ../sys/printtos.c /usr/include/stdc-predef.h ../h/stdio.h
 putc.o: ../sys/putc.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/io.h
@@ -478,7 +480,8 @@ recvtim.o: ../sys/recvtim.c /usr/include/stdc-predef.h ../h/conf.h \
 resched.o: ../sys/resched.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/q.h
 resume.o: ../sys/resume.c /usr/include/stdc-predef.h ../h/conf.h \
- ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/stdio.h
+ ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/stdio.h \
+ ../h/lab0.h
 scount.o: ../sys/scount.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/sem.h
 screate.o: ../sys/screate.c /usr/include/stdc-predef.h ../h/conf.h \

@@ -4,16 +4,17 @@
 #include <kernel.h>
 #include <proc.h>
 #include <stdio.h>
-#include <lab0.h>
+//#include <lab0.h>
 /*------------------------------------------------------------------------
  *  main  --  user main program
  *------------------------------------------------------------------------
  */
 
+
+
 int main()
 {
 	long num = 0xaabbccdd, ans;
-	static unsigned long *esp;
 	kprintf("\n\nHey World, Xinu lives\n\n");
 	ans = zfunction(num);
 	kprintf("num: 0x%x\n", num);
@@ -21,5 +22,11 @@ int main()
 	printsegaddress();
 	printtos();	
 	printprocstks(1);
+	syscallsummary_start ();
+ 	kprintf("pid: %d", getpid());	
+	getpid();
+	getpid();
+	syscallsummary_stop ();
+	printsyscallsummary();
 	return 0;
 }

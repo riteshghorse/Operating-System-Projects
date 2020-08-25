@@ -4,3 +4,7 @@ sys/zfunction.S
 sys/printsegaddress.c
 sys/Makefile
 sys/printtos.c
+sys/printprocstks.c
+sys/printsyscallsummary.c
+
+sys/resume.c\nsys/getpid.c\nsys/printsyscallsummary.c

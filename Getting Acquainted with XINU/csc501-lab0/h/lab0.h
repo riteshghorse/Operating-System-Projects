@@ -3,12 +3,27 @@
 
 #include <stdio.h>
 
-
-long zfunction();
+extern long zfunction(long);
 
 extern char etext, edata;
 
-void printsegaddress();
+extern void printsegaddress();
 
-void printtos();
+extern void printtos();
+
+extern void syscallsummary_start();
+extern void syscallsummary_stop();
+extern void printsyscallsummary();
+
+//extern int isprocactive = 0;
+//extern unsigned long ctr1000;
+struct sctrace {
+	char name[25];
+	long frequency;
+	unsigned long totaltime;
+};
+
+
+//extern struct sctrace sctrtable[50][27] = {"", 0, 0.0};
+
 #endif
