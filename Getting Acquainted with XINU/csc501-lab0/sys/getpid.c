@@ -16,13 +16,16 @@ extern unsigned long ctr1000;
 
 SYSCALL getpid()
 {	
-	unsigned long starttime = ctr1000, endtime;
+	unsigned long starttime, endtime;
+	const int syscallid = 2;
+
+	starttime = ctr1000;
 	int i = 0;
 	if (isprocactive == 1) {
-		strcpy(sctrtable[currpid][0].name, "sys_getpid");
-		sctrtable[currpid][0].frequency += 1;
+		strcpy (sctrtable[currpid][syscallid].name, "sys_getpid");
+		sctrtable[currpid][syscallid].frequency += 1;
 		endtime = ctr1000;
-		sctrtable[currpid][0].totaltime += endtime - starttime;
+		sctrtable[currpid][syscallid].totaltime += endtime - starttime;
 	}	
 	return(currpid);
 }

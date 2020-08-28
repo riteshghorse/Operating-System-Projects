@@ -15,9 +15,9 @@ extern void syscallsummary_start();
 extern void syscallsummary_stop();
 extern void printsyscallsummary();
 
-//extern int isprocactive = 0;
+extern int isprocactive;
 //extern unsigned long ctr1000;
-struct sctrace {
+extern struct sctrace {
 	char name[25];
 	long frequency;
 	unsigned long totaltime;

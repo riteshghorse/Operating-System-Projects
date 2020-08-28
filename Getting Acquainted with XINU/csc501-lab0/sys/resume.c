@@ -11,13 +11,15 @@
  *------------------------------------------------------------------------
  */
 extern int isprocactive;
-extern unsigned long ctr1000;
 extern struct sctrace sctrtable[50][27];
+extern unsigned long ctr1000;
 
 SYSCALL resume(int pid)
 {
 	unsigned long starttime = ctr1000;	
 	unsigned long endtime;
+	const int syscallid = 9;
+
 	STATWORD ps;    
 	struct	pentry	*pptr;		/* pointer to proc. tab. entry	*/
 	int	prio;			/* priority to return		*/
@@ -30,11 +32,11 @@ SYSCALL resume(int pid)
 	prio = pptr->pprio;
 	ready(pid, RESCHYES);
 	restore(ps);
-	endtime = ctr1000;
 	if (isprocactive == 1) {
-		strcpy(sctrtable[pid][10].name, __func__);
-		sctrtable[pid][10].frequency += 1;
-		sctrtable[pid][10].totaltime += endtime - starttime;
+		strcpy(sctrtable[pid][syscallid].name, "sys_resume");
+		sctrtable[pid][syscallid].frequency += 1;
+		endtime = ctr1000;
+		sctrtable[pid][syscallid].totaltime += endtime - starttime;
 	}
 	return(prio);
 }

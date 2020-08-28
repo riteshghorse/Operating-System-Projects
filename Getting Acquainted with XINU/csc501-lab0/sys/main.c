@@ -26,6 +26,7 @@ int main()
  	kprintf("pid: %d", getpid());	
 	getpid();
 	getpid();
+	sleep(1);
 	syscallsummary_stop ();
 	printsyscallsummary();
 	return 0;

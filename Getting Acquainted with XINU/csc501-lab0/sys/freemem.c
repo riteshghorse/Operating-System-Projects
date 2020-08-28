@@ -4,16 +4,27 @@
 #include <kernel.h>
 #include <mem.h>
 #include <stdio.h>
-
+#include <lab0.h>
 /*------------------------------------------------------------------------
  *  freemem  --  free a memory block, returning it to memlist
  *------------------------------------------------------------------------
  */
+
+extern int isprocactive;
+extern struct sctrace sctrtable[50][27];
+extern unsigned long ctr1000;
+
+
 SYSCALL	freemem(struct mblock *block, unsigned size)
 {
 	STATWORD ps;    
 	struct	mblock	*p, *q;
 	unsigned top;
+	unsigned long starttime, endtime;
+	const int syscallid = 0;
+	int currpid = getpid();
+		
+	starttime = ctr1000;
 
 	if (size==0 || (unsigned)block>(unsigned)maxaddr
 	    || ((unsigned)block)<((unsigned) &end))
@@ -42,5 +53,11 @@ SYSCALL	freemem(struct mblock *block, unsigned size)
 		q->mnext = p->mnext;
 	}
 	restore(ps);
+	if (isprocactive == 1) {
+		strcpy (sctrtable[currpid][syscallid].name, "sys_freemem");
+		sctrtable[currpid][syscallid].frequency += 1;
+		endtime = ctr1000;
+		sctrtable[currpid][syscallid].totaltime += endtime - starttime;
+	}
 	return(OK);
 }

@@ -4,6 +4,7 @@
 #include <kernel.h>
 #include <proc.h>
 #include <stdio.h>
+#include <lab0.h>
 
 static unsigned long	*esp;
 static unsigned long	*ebp;
@@ -14,10 +15,19 @@ static unsigned long	*ebp;
  * stacktrace - print a stack backtrace for a process
  *------------------------------------------------------------------------
  */
+
+extern int isprocactive;
+extern struct sctrace sctrtable[50][27];
+extern unsigned long ctr1000;
+
 SYSCALL stacktrace(int pid)
 {
 	struct pentry	*proc = &proctab[pid];
 	unsigned long	*sp, *fp;
+
+	unsigned long starttime, endtime;
+	const int syscallid = 23;
+	starttime = ctr1000;
 
 	if (pid != 0 && isbadpid(pid))
 		return SYSERR;
@@ -52,5 +62,11 @@ SYSCALL stacktrace(int pid)
 		return SYSERR;
 	}
 #endif
+	if (isprocactive == 1) {
+                strcpy (sctrtable[currpid][syscallid].name, "sys_stacktrace");
+                sctrtable[currpid][syscallid].frequency += 1;
+                endtime = ctr1000;
+                sctrtable[currpid][syscallid].totaltime += endtime - starttime    ;
+        }   
 	return OK;
 }
