@@ -1,0 +1,37 @@
+1. Assuming the XINU text begins at address 0x0, draw a rough diagram of XINU's memory layout with addresses derived from your experimental measurements. Include the information you uncovered from running your version of printsegaddress() and printprocstks().
+
+-------------------- 0x00000000
+|		   |
+------etext--------- 0x000192cd
+|		   |
+------edata--------- 0x0001e53d
+|		   |
+------end----------- 0x0002ff78
+|		   |
+------heap----------
+|		   |
+------limit--------- 0x00ffdffc
+|		   |
+|     len: 4096	   |
+|		   |
+------stack base---- 0x00ffeff8
+
+
+2. What is the difference in stack top address before and after calling printtos()? Draw a diagram to illustrate what are the contents of the items pushed into the stack between these two time points.
+
+Difference between stack top address before and after:
+	before		: 0x00ffeff4
+	after		: 0x00ffefec
+	difference	: 8 bytes
+
+Diagram:
+		top of stack
+stack pointer->---------------------
+		|locals of printtos|
+	        --------------------
+		|ebp		   |
+	        --------------------
+		|return address	   |
+	        --------------------
+
+		
