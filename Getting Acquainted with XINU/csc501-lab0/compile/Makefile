@@ -569,8 +569,6 @@ gettime.o: ../TMP/gettime.c /usr/include/stdc-predef.h ../h/conf.h \
 kill.o: ../TMP/kill.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/sem.h \
  ../h/io.h ../h/q.h ../h/stdio.h ../h/lab0.h
-main.o: ../TMP/main.c /usr/include/stdc-predef.h ../h/conf.h \
- ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/stdio.h
 printprocstks.o: ../TMP/printprocstks.c /usr/include/stdc-predef.h \
  ../h/conf.h ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h \
  ../h/stdio.h
