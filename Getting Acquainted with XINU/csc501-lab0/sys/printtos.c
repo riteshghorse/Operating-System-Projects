@@ -17,7 +17,7 @@ printtos ()
 	int c = 3;
 	int d = 4;	
 	++esp;
-	kprintf ("\t\telement[0x%08x]: 0x%08x\n", esp,*esp);
+	kprintf ("\t\telement[0x%08x]: 0x%08x\n", esp, *esp);
 	++esp;
 	kprintf ("\t\telement[0x%08x]: 0x%08x\n", esp, *esp);
 	++esp;

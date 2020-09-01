@@ -13,7 +13,7 @@
 
 int main()
 {
-	long num = 0xaabbccdd, ans;
+	long num = 0xddccbbaa, ans;
 	kprintf("\n\nHey World, Xinu lives\n\n");
 	ans = zfunction(num);
 	kprintf("zfunction (0x%x): 0x%x\n", num, ans);

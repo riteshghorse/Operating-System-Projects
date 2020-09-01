@@ -3,7 +3,8 @@
 #include <proc.h>
 #include <stdio.h>
 #include <lab0.h>
-//#include <string.h>
+
+
 int isprocactive = 0;
 unsigned long ctr1000;
 struct sctrace sctrtable[50][27] = {"", 0, 0.0};

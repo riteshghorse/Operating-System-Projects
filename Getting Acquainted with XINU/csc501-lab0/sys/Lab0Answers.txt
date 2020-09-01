@@ -2,7 +2,7 @@
 
 -------------------- 0x00000000
 |		   |
-------etext--------- 0x000192cd
+------etext--------- 0x000192ad
 |		   |
 ------edata--------- 0x0001e53d
 |		   |
@@ -10,11 +10,11 @@
 |		   |
 ------heap----------
 |		   |
-------limit--------- 0x00ffdffc
+------limit--------- 0x00fff000
 |		   |
 |     len: 4096	   |
 |		   |
-------stack base---- 0x00ffeff8
+------stack base---- 0x00fffffc
 
 
 2. What is the difference in stack top address before and after calling printtos()? Draw a diagram to illustrate what are the contents of the items pushed into the stack between these two time points.

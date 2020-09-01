@@ -15,7 +15,7 @@ printprocstks (int priority)
 
 	for (i = 0; i < processes; ++i) {
 		currprocess = &proctab[i];		
-		if ((currprocess->pstate != PRFREE) && (currprocess->pprio > priority)) {
+		if ((currprocess->pstate != PRFREE) && (currprocess->pprio < priority)) {
 					kprintf ("Process [%s]\n", currprocess->pname);
 					kprintf ("\tpid: %d\n", i);
 					kprintf ("\tpriority: %d\n", currprocess->pprio);
