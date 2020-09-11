@@ -10,7 +10,7 @@ int schedclass;
 
 void setschedclass(int sched_class)
 {
-	schedclass = sched_classl
+	schedclass = sched_class;
 }
 
 int getschedclass()

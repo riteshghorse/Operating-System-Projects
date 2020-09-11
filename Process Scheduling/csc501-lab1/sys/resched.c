@@ -4,6 +4,9 @@
 #include <kernel.h>
 #include <proc.h>
 #include <q.h>
+#include <stdio.h>
+#include <lab1.h>
+#include <math.h>
 
 unsigned long currSP;	/* REAL sp of current process */
 extern int ctxsw(int, int, int, int);
@@ -19,7 +22,15 @@ int resched()
 {
 	register struct	pentry	*optr;	/* pointer to old process entry */
 	register struct	pentry	*nptr;	/* pointer to new process entry */
+	int expval, sched_class;
+	double lambda = 0.1;
 
+	sched_class = getschedclass();
+
+	if (sched_class == EXPDISTSCHED) {
+		expval = (int) expdev(lambda);
+		kprintf("%d ", expval);
+	}
 	/* no switch needed if current process priority higher than next*/
 
 	if ( ( (optr= &proctab[currpid])->pstate == PRCURR) &&
