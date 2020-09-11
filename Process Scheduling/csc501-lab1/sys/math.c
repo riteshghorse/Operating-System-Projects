@@ -24,8 +24,8 @@ double log(double x) {
 	} else
 		return -1;
 }
-
-/*	int n = 20;
+/*
+	int n = 20;
 	if (x > 0) {
 		double log_value;
 		double val1;

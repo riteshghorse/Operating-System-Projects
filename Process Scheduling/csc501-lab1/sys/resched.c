@@ -22,14 +22,38 @@ int resched()
 {
 	register struct	pentry	*optr;	/* pointer to old process entry */
 	register struct	pentry	*nptr;	/* pointer to new process entry */
-	int expval, sched_class;
+	int expval, sched_class, newproc;
 	double lambda = 0.1;
 
 	sched_class = getschedclass();
 
 	if (sched_class == EXPDISTSCHED) {
 		expval = (int) expdev(lambda);
-		kprintf("%d ", expval);
+		//kprintf("%d ", expval);
+		newproc = getnextexpproc(expval);
+		
+		/*if no process in rdy queue 
+		then keep executing current process*/
+		if ((optr= &proctab[currpid])->pstate == PRCURR) {
+			if (newproc == NULLPROC)
+				return (OK);
+		}
+	
+		/* force context switch */
+
+	        if (optr->pstate == PRCURR) {
+        	        optr->pstate = PRREADY;
+                	insert(currpid,rdyhead,optr->pprio);
+        	}
+		
+		nptr = &proctab[ (currpid = getlastexpproc(newproc)) ];
+		nptr->pstate = PRCURR;
+		#ifdef RTCLOCK
+			preempt = QUANTUM;
+		#endif
+		ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
+		return(OK);				
+		
 	}
 	/* no switch needed if current process priority higher than next*/
 
