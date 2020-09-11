@@ -6,7 +6,26 @@
 #include <math.h>
 
 double log(double x) {
-	unsigned int n = 20;
+	if(x > 0){
+	int i;
+	double num, mul, cal, sum = 0; 
+	num = (x - 1) / (x + 1); 
+  
+    	// terminating value of the loop 
+        // can be increased to improve the precision 
+             for (i = 1; i <= 20; i++) { 
+                     mul = (2 * i) - 1; 
+                     cal = pow(num, mul); 
+                     cal = cal / mul; 
+                     sum = sum + cal; 
+             } 
+             sum = 2 * sum; 
+             return sum; 
+	} else
+		return -1;
+}
+
+/*	int n = 20;
 	if (x > 0) {
 		double log_value;
 		double val1;
@@ -39,7 +58,7 @@ double log(double x) {
 	} else {
 		return -1;
 	}
-}
+}*/
 
 double pow(double x, int y) {
 	int i;
@@ -47,20 +66,20 @@ double pow(double x, int y) {
 	if (x == 0) {
 		return 0;
 	}
-	if (x == -1) {
+	/*if (x == -1) {
 		return ((y%2 == 0) ? 1 : -1);
-	}
-	for (i = 1; i <= y; i ++) {
-		pow_value = pow_value * x;
+	}*/
+	for (i = 1; i <= y; ++i) {
+		pow_value *= x;
 	}
 	return pow_value;
 }
 
-double expdev(double lambda) {
+double expdev (double lambda) 
+{
     double dummy;
     do {
         dummy = (double) rand() / RAND_MAX;
     } while (dummy == 0.0);
     return -log(dummy) / lambda;
 }
-
