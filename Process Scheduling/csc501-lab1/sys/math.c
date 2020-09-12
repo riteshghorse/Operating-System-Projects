@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <math.h>
 
-double log(double x) {
+/*double log(double x) {
 	if(x > 0){
 	int i;
 	double num, mul, cal, sum = 0; 
@@ -23,7 +23,7 @@ double log(double x) {
              return sum; 
 	} else
 		return -1;
-}
+}*/
 /*
 	int n = 20;
 	if (x > 0) {
@@ -73,6 +73,25 @@ double pow(double x, int y) {
 		pow_value *= x;
 	}
 	return pow_value;
+}
+
+double log (double x)
+{
+    int i;
+    double num, mul, cal, sum = 0; 
+    if(x > 0.0){
+        num = (x - 1) / (x + 1);         
+        for (i = 1; i <= 20; i++) { 
+                mul = (2 * i) - 1; 
+                cal = pow(num, mul); 
+                cal = cal / mul; 
+                sum = sum + cal; 
+        } 
+        sum = 2 * sum;
+    }
+    else
+        return -1;  
+    return sum; 
 }
 
 double expdev (double lambda) 

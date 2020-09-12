@@ -20,24 +20,24 @@ int getschedclass ()
 
 int getnextexpproc (int expval)
 {
-	int process;
-	if (expval > lastkey(rdytail)) {
+	int nextprocess;
+	if (expval >= lastkey(rdytail)) {
 		return q[rdytail].qprev;
 	}
 
 	if (expval < firstkey(rdyhead)) {
 		return q[rdyhead].qnext;
 	}
-	process = q[rdyhead].qnext;
-	while (expval >= q[process].qkey && nonempty(process)) {
-		process = q[process].qnext;
+	nextprocess = q[rdyhead].qnext;
+	while ((expval >= q[nextprocess].qkey) && nonempty(nextprocess)) {
+		nextprocess = q[nextprocess].qnext;
 	}
-	if (nonempty(process)) {
-		while (nonempty(process) && (q[process].qkey == q[q[process].qnext].qkey))
-			process = q[process].qnext;
-		return process;
+	if (expval < q[nextprocess].qkey) {
+		while ((q[nextprocess].qkey == q[q[nextprocess].qnext].qkey))
+			nextprocess = q[nextprocess].qnext;
+		return nextprocess;
 	} else {
-		return (NULLPROC);
+		return(NULLPROC) ;
 	}
 }
 
@@ -47,4 +47,54 @@ int getlastexpproc (int process)
 		return( dequeue(process) );
 	else
 		return(EMPTY);
+}
+
+int isendofepoch () 
+{
+	int nextprocess;
+	nextprocess = q[rdyhead].qnext;
+	while (nextprocess != rdytail && nextprocess < NPROC) {
+		if(proctab[nextprocess].counter > 0)
+			return 0;	
+	}
+	return 1;
+}
+
+void newepochinit ()
+{
+	int i;
+	for (i = 0; i < NPROC; ++i) {
+		if (proctab[i].pstate == PRCURR || proctab[i].pstate == PRRECV || proctab[i].pstate == PRREADY) {
+			/* process never executed in previous epoch */
+			if (proctab[i].quantum == -1) {
+				proctab[i].quantum = proctab[i].pprio;
+				proctab[i].counter = proctab[i].pprio;
+			} else if (proctab[i].counter > 0) { 
+				/* process didn't used entire quantum */	
+				proctab[i].quantum = (proctab[i].counter / 2) + proctab[i].pprio;
+				proctab[i].counter = proctab[i].quantum; 
+			} else /* quantuum exhausted in last epoch*/
+				proctab[i].counter = proctab[i].quantum;
+			}
+	}
+}
+
+int getnextlinuxproc ()
+{
+	int nextprocess, process = NPROC+1, gval = 0, temp;
+	nextprocess = q[rdyhead].qnext;
+	while (nextprocess != rdytail && nextprocess < NPROC) {
+		if (proctab[nextprocess].counter > 0) {
+			temp = proctab[nextprocess].counter + proctab[nextprocess].goodness;
+			if (temp >= gval) {
+				gval = temp;
+				process = nextprocess;
+			}
+		}
+		nextprocess = q[nextprocess].qnext;
+	}
+	if (process < NPROC)
+		return process;
+	else
+		return(NULLPROC);
 }

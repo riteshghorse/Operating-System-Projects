@@ -1,9 +1,10 @@
 #include <conf.h>
 #include <kernel.h>
+#include <proc.h>
 #include <q.h>
-#include <lab1.h>
 #include <stdio.h>
 #include <math.h>
+#include <lab1.h>
 
 #define LOOP	50
 
@@ -49,10 +50,13 @@ int main() {
 	// LINUXSCHED
 	else {
 		setschedclass(LINUXSCHED);
+		kprintf("%d\n", getschedclass());
 		resume(prA = create(proc, 2000, 5, "proc A", 1, 'A'));
+		kprintf("a\n");
 		resume(prB = create(proc, 2000, 50, "proc B", 1, 'B'));
+		kprintf("b\n");
 		resume(prC = create(proc, 2000, 90, "proc C", 1, 'C'));
-
+		kprintf("loop\n");
 		while (count++ < LOOP) {
 			kprintf("M");
 			for (i = 0; i < 1000000; i++)

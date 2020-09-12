@@ -22,20 +22,20 @@ int resched()
 {
 	register struct	pentry	*optr;	/* pointer to old process entry */
 	register struct	pentry	*nptr;	/* pointer to new process entry */
-	int expval, sched_class, newproc;
+	int expval, newprocess, sched_class;
 	double lambda = 0.1;
 
 	sched_class = getschedclass();
 
-	if (sched_class == EXPDISTSCHED) {
+	if (sched_class == EXPDISTSCHED) {	/* EXPONENTIAL SCHEDULER */
 		expval = (int) expdev(lambda);
 		//kprintf("%d ", expval);
-		newproc = getnextexpproc(expval);
+		newprocess = getnextexpproc(expval);
 		
 		/*if no process in rdy queue 
 		then keep executing current process*/
 		if ((optr= &proctab[currpid])->pstate == PRCURR) {
-			if (newproc == NULLPROC)
+			if (newprocess == NULLPROC)
 				return (OK);
 		}
 	
@@ -45,8 +45,12 @@ int resched()
         	        optr->pstate = PRREADY;
                 	insert(currpid,rdyhead,optr->pprio);
         	}
-		
-		nptr = &proctab[ (currpid = getlastexpproc(newproc)) ];
+		/*if (newprocess < NPROC)
+			currpid = dequeue(newprocess);
+		else
+			currpid = (EMPTY);
+		nptr = &proctab[currpid];*/
+		nptr = &proctab[ (currpid = dequeue(newprocess)) ];
 		nptr->pstate = PRCURR;
 		#ifdef RTCLOCK
 			preempt = QUANTUM;
@@ -54,7 +58,31 @@ int resched()
 		ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
 		return(OK);				
 		
+	} else if (sched_class == LINUXSCHED) { /* LINUX SCHEDULER */
+		if(isendofepoch()) {
+			newepochinit();
+		}
+		/* update the counter */
+		optr = &proctab[currpid];
+		optr->counter = preempt;
+		
+		newprocess = getnextlinuxproc();
+		if (optr->pstate == PRCURR) {
+			if (newprocess == NULLPROC) {
+				return(OK);
+			}
+			optr->pstate = PRREADY;
+			insert(currpid, rdyhead, optr->pprio);
+		}
+		nptr = &proctab[ (currpid = dequeue(newprocess)) ];
+		nptr->pstate = PRCURR;
+		#ifdef RTCLOCK
+			preempt = nptr->counter;
+		#endif
+		ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
+		return(OK);
 	}
+
 	/* no switch needed if current process priority higher than next*/
 
 	if ( ( (optr= &proctab[currpid])->pstate == PRCURR) &&

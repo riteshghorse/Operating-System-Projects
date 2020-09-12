@@ -9,4 +9,8 @@ void setschedclass(int sched_class);
 int getschedclass();
 int getnextexpproc(int expval);
 int getlastexpproc(int process);
+
+int isendofepoch();
+void newepochinit();
+int getnextlinuxproc();
 #endif
