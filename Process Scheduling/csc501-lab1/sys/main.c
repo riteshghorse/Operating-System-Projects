@@ -50,13 +50,13 @@ int main() {
 	// LINUXSCHED
 	else {
 		setschedclass(LINUXSCHED);
-		kprintf("%d\n", getschedclass());
+//		kprintf("%d\n", getschedclass());
 		resume(prA = create(proc, 2000, 5, "proc A", 1, 'A'));
-		kprintf("a\n");
+//		kprintf("a\n");
 		resume(prB = create(proc, 2000, 50, "proc B", 1, 'B'));
-		kprintf("b\n");
+//		kprintf("b\n");
 		resume(prC = create(proc, 2000, 90, "proc C", 1, 'C'));
-		kprintf("loop\n");
+//		kprintf("loop\n");
 		while (count++ < LOOP) {
 			kprintf("M");
 			for (i = 0; i < 1000000; i++)

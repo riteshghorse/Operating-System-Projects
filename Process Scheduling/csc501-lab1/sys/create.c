@@ -49,7 +49,7 @@ SYSCALL create(procaddr,ssize,priority,name,nargs,args)
 	/* changed for linux	*/
 	pptr->quantum = -1;
 	pptr->counter = -1;
-	pptr->goodness = priority;
+	pptr->goodness = -1;
 	/* change end here	*/
 	pptr->fildes[0] = 0;	/* stdin set to console */
 	pptr->fildes[1] = 0;	/* stdout set to console */

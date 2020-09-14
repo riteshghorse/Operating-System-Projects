@@ -59,26 +59,34 @@ int resched()
 		return(OK);				
 		
 	} else if (sched_class == LINUXSCHED) { /* LINUX SCHEDULER */
+
+		/* update the counter */
+                optr = &proctab[currpid];
+                optr->counter = preempt;
+		
+		if (optr->pstate == PRCURR) {
+                        optr->pstate = PRREADY;
+                        insert(currpid, rdyhead, optr->pprio);
+                }
+
 		if(isendofepoch()) {
 			newepochinit();
 		}
 		/* update the counter */
-		optr = &proctab[currpid];
+/*		optr = &proctab[currpid];
 		optr->counter = preempt;
-		
-		newprocess = getnextlinuxproc();
-		if (optr->pstate == PRCURR) {
-			if (newprocess == NULLPROC) {
-				return(OK);
-			}
+*/		
+/*		if (optr->pstate == PRCURR) {
 			optr->pstate = PRREADY;
 			insert(currpid, rdyhead, optr->pprio);
 		}
+*/
+		newprocess = getnextlinuxproc();
 		nptr = &proctab[ (currpid = dequeue(newprocess)) ];
 		nptr->pstate = PRCURR;
-		#ifdef RTCLOCK
+//		ifdef RTCLOCK
 			preempt = nptr->counter;
-		#endif
+//		#endif
 		ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
 		return(OK);
 	}

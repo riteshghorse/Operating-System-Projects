@@ -56,6 +56,7 @@ int isendofepoch ()
 	while (nextprocess != rdytail && nextprocess < NPROC) {
 		if(proctab[nextprocess].counter > 0)
 			return 0;	
+		nextprocess = q[nextprocess].qnext;
 	}
 	return 1;
 }
@@ -64,7 +65,9 @@ void newepochinit ()
 {
 	int i;
 	for (i = 0; i < NPROC; ++i) {
-		if (proctab[i].pstate == PRCURR || proctab[i].pstate == PRRECV || proctab[i].pstate == PRREADY) {
+		proctab[i].goodness = proctab[i].pprio;
+		if (proctab[i].pstate != PRFREE) {
+		//if (proctab[i].pstate == PRCURR || proctab[i].pstate == PRRECV || proctab[i].pstate == PRREADY) {
 			/* process never executed in previous epoch */
 			if (proctab[i].quantum == -1) {
 				proctab[i].quantum = proctab[i].pprio;
@@ -84,7 +87,7 @@ int getnextlinuxproc ()
 	int nextprocess, process = NPROC+1, gval = 0, temp;
 	nextprocess = q[rdyhead].qnext;
 	while (nextprocess != rdytail && nextprocess < NPROC) {
-		if (proctab[nextprocess].counter > 0) {
+		if (proctab[nextprocess].counter > 0)  {
 			temp = proctab[nextprocess].counter + proctab[nextprocess].goodness;
 			if (temp >= gval) {
 				gval = temp;
