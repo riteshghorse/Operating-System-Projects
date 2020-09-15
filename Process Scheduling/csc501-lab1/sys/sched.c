@@ -67,18 +67,17 @@ void newepochinit ()
 	for (i = 0; i < NPROC; ++i) {
 		proctab[i].goodness = proctab[i].pprio;
 		if (proctab[i].pstate != PRFREE) {
-		//if (proctab[i].pstate == PRCURR || proctab[i].pstate == PRRECV || proctab[i].pstate == PRREADY) {
 			/* process never executed in previous epoch */
 			if (proctab[i].quantum == -1) {
 				proctab[i].quantum = proctab[i].pprio;
 				proctab[i].counter = proctab[i].pprio;
-			} else if (proctab[i].counter > 0) { 
-				/* process didn't used entire quantum */	
-				proctab[i].quantum = (proctab[i].counter / 2) + proctab[i].pprio;
+			} //else if (proctab[i].counter > 0) { 
+			else {
+				/* process executed in last epoch */	
+				proctab[i].quantum = (proctab[i].counter / 2) + proctab[i].goodness;
 				proctab[i].counter = proctab[i].quantum; 
-			} else /* quantuum exhausted in last epoch*/
-				proctab[i].counter = proctab[i].quantum;
 			}
+		}
 	}
 }
 

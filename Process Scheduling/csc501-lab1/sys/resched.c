@@ -62,31 +62,27 @@ int resched()
 
 		/* update the counter */
                 optr = &proctab[currpid];
-                optr->counter = preempt;
-		
+		optr->counter = preempt;
+
 		if (optr->pstate == PRCURR) {
                         optr->pstate = PRREADY;
                         insert(currpid, rdyhead, optr->pprio);
                 }
 
+                if (optr->counter <= 0)
+			optr->counter = 0;
+		else
+			optr->counter = preempt;
+		
 		if(isendofepoch()) {
 			newepochinit();
 		}
-		/* update the counter */
-/*		optr = &proctab[currpid];
-		optr->counter = preempt;
-*/		
-/*		if (optr->pstate == PRCURR) {
-			optr->pstate = PRREADY;
-			insert(currpid, rdyhead, optr->pprio);
-		}
-*/
+
 		newprocess = getnextlinuxproc();
 		nptr = &proctab[ (currpid = dequeue(newprocess)) ];
 		nptr->pstate = PRCURR;
-//		ifdef RTCLOCK
-			preempt = nptr->counter;
-//		#endif
+		preempt = nptr->counter;
+
 		ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
 		return(OK);
 	}
