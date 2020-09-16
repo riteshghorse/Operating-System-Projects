@@ -47,7 +47,6 @@ SYSCALL create(procaddr,ssize,priority,name,nargs,args)
 	numproc++;
 	pptr = &proctab[pid];
 	/* changed for linux	*/
-	pptr->quantum = -1;
 	pptr->counter = -1;
 	pptr->goodness = -1;
 	/* change end here	*/

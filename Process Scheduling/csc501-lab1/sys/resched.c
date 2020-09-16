@@ -29,11 +29,13 @@ int resched()
 
 	if (sched_class == EXPDISTSCHED) {	/* EXPONENTIAL SCHEDULER */
 		expval = (int) expdev(lambda);
-		//kprintf("%d ", expval);
 		newprocess = getnextexpproc(expval);
 		
+
 		/*if no process in rdy queue 
 		then keep executing current process*/
+		/*if (newprocess == (NULLPROC)) 
+			return (OK);*/
 		if ((optr= &proctab[currpid])->pstate == PRCURR) {
 			if (newprocess == NULLPROC)
 				return (OK);
@@ -45,11 +47,6 @@ int resched()
         	        optr->pstate = PRREADY;
                 	insert(currpid,rdyhead,optr->pprio);
         	}
-		/*if (newprocess < NPROC)
-			currpid = dequeue(newprocess);
-		else
-			currpid = (EMPTY);
-		nptr = &proctab[currpid];*/
 		nptr = &proctab[ (currpid = dequeue(newprocess)) ];
 		nptr->pstate = PRCURR;
 		#ifdef RTCLOCK
@@ -71,18 +68,30 @@ int resched()
 
                 if (optr->counter <= 0)
 			optr->counter = 0;
-		else
-			optr->counter = preempt;
 		
 		if(isendofepoch()) {
+		
 			newepochinit();
+		//	kprintf("\n");
 		}
-
+		//kprintf("c: %d ", currpid);
 		newprocess = getnextlinuxproc();
+		if (newprocess == (NULLPROC)) {
+			if (currpid == (NULLPROC) || isempty(rdyhead)) {
+				preempt = QUANTUM;
+				return(OK);
+			}
+			nptr = &proctab[ (currpid = dequeue(newprocess)) ];
+			nptr->pstate = PRCURR;
+			#ifdef RTCLOCK
+				preempt = QUANTUM;
+			#endif
+			ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
+                	return(OK);
+		} 
 		nptr = &proctab[ (currpid = dequeue(newprocess)) ];
 		nptr->pstate = PRCURR;
 		preempt = nptr->counter;
-
 		ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
 		return(OK);
 	}

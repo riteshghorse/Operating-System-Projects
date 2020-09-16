@@ -5,60 +5,6 @@
 #include <stdio.h>
 #include <math.h>
 
-/*double log(double x) {
-	if(x > 0){
-	int i;
-	double num, mul, cal, sum = 0; 
-	num = (x - 1) / (x + 1); 
-  
-    	// terminating value of the loop 
-        // can be increased to improve the precision 
-             for (i = 1; i <= 20; i++) { 
-                     mul = (2 * i) - 1; 
-                     cal = pow(num, mul); 
-                     cal = cal / mul; 
-                     sum = sum + cal; 
-             } 
-             sum = 2 * sum; 
-             return sum; 
-	} else
-		return -1;
-}*/
-/*
-	int n = 20;
-	if (x > 0) {
-		double log_value;
-		double val1;
-		double val2;	
-		if(x >= 1) {
-			val1 = (x-1)/x;
-			log_value = val1;	
-			double a = val1;
-			double i;
-			for(i = 2; i <= n; i++) {
-				val2 = val1 * a * ((i-1)/(i));
-				val1 = val2;
-				log_value += val2;
-			}
-		} else if(x < 1 && x > 0) {
-			val1 = 1 - x;	
-			log_value = val1;
-			double b = val1;
-			unsigned int j;
-			for(j = 2; j <= n; j++) {
-				val2 = val1 * ((b)*(j-1))/j;
-				val1 = val2;
-				log_value += val2;
-			}
-			log_value = log_value * (-1);
-		} else {
-			return -1;
-		}
-		return log_value;
-	} else {
-		return -1;
-	}
-}*/
 
 double pow(double x, int y) {
 	int i;

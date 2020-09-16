@@ -21,24 +21,31 @@ int getschedclass ()
 int getnextexpproc (int expval)
 {
 	int nextprocess;
+	//check if ready queues has processes
+	if (isempty(rdyhead))
+		return (NULLPROC);
+	
 	if (expval >= lastkey(rdytail)) {
-		return q[rdytail].qprev;
+		return (q[rdytail].qprev);
 	}
 
 	if (expval < firstkey(rdyhead)) {
-		return q[rdyhead].qnext;
+		return (q[rdyhead].qnext);
 	}
+
 	nextprocess = q[rdyhead].qnext;
-	while ((expval >= q[nextprocess].qkey) && nonempty(nextprocess)) {
+	while (expval >= q[nextprocess].qkey) {
 		nextprocess = q[nextprocess].qnext;
 	}
-	if (expval < q[nextprocess].qkey) {
-		while ((q[nextprocess].qkey == q[q[nextprocess].qnext].qkey))
-			nextprocess = q[nextprocess].qnext;
-		return nextprocess;
-	} else {
+	/*if (nextprocess >= NPROC)
+		return(NULLPROC);
+	if (expval < q[nextprocess].qkey) {*/
+	while (nonempty(nextprocess) && (q[nextprocess].qkey == q[q[nextprocess].qnext].qkey))
+		nextprocess = q[nextprocess].qnext;
+	return nextprocess;
+/*	} else {
 		return(NULLPROC) ;
-	}
+	}*/
 }
 
 int getlastexpproc (int process)
@@ -67,15 +74,13 @@ void newepochinit ()
 	for (i = 0; i < NPROC; ++i) {
 		proctab[i].goodness = proctab[i].pprio;
 		if (proctab[i].pstate != PRFREE) {
-			/* process never executed in previous epoch */
-			if (proctab[i].quantum == -1) {
-				proctab[i].quantum = proctab[i].pprio;
+			/* process never executed */
+			if (proctab[i].counter == -1) {
 				proctab[i].counter = proctab[i].pprio;
-			} //else if (proctab[i].counter > 0) { 
-			else {
+			} else {
 				/* process executed in last epoch */	
-				proctab[i].quantum = (proctab[i].counter / 2) + proctab[i].goodness;
-				proctab[i].counter = proctab[i].quantum; 
+				proctab[i].counter = (proctab[i].counter / 2) + proctab[i].goodness;
+				//kprintf("c: %d - %d\n", proctab[i].counter, i);
 			}
 		}
 	}
