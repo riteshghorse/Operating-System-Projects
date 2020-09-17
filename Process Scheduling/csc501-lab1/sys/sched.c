@@ -61,7 +61,7 @@ int isendofepoch ()
 	int nextprocess;
 	nextprocess = q[rdyhead].qnext;
 	while (nextprocess != rdytail && nextprocess < NPROC) {
-		if(proctab[nextprocess].counter > 0)
+		if(proctab[nextprocess].goodness > 0)
 			return 0;	
 		nextprocess = q[nextprocess].qnext;
 	}
@@ -72,17 +72,17 @@ void newepochinit ()
 {
 	int i;
 	for (i = 0; i < NPROC; ++i) {
-		proctab[i].goodness = proctab[i].pprio;
 		if (proctab[i].pstate != PRFREE) {
 			/* process never executed */
-			if (proctab[i].counter == -1) {
+			if (proctab[i].counter < 1) {
 				proctab[i].counter = proctab[i].pprio;
 			} else {
 				/* process executed in last epoch */	
-				proctab[i].counter = (proctab[i].counter / 2) + proctab[i].goodness;
+				proctab[i].counter = (proctab[i].counter / 2) + proctab[i].pprio;
 				//kprintf("c: %d - %d\n", proctab[i].counter, i);
 			}
 		}
+		proctab[i].goodness = proctab[i].counter + proctab[i].pprio;
 	}
 }
 
@@ -91,8 +91,8 @@ int getnextlinuxproc ()
 	int nextprocess, process = NPROC+1, gval = 0, temp;
 	nextprocess = q[rdyhead].qnext;
 	while (nextprocess != rdytail && nextprocess < NPROC) {
-		if (proctab[nextprocess].counter > 0)  {
-			temp = proctab[nextprocess].counter + proctab[nextprocess].goodness;
+		if (proctab[nextprocess].goodness > 0)  {
+			temp = proctab[nextprocess].goodness;
 			if (temp >= gval) {
 				gval = temp;
 				process = nextprocess;

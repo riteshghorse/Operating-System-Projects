@@ -22,7 +22,7 @@ int resched()
 {
 	register struct	pentry	*optr;	/* pointer to old process entry */
 	register struct	pentry	*nptr;	/* pointer to new process entry */
-	int expval, newprocess, sched_class;
+	int expval, newprocess, sched_class, currprio;
 	double lambda = 0.1;
 
 	sched_class = getschedclass();
@@ -56,70 +56,80 @@ int resched()
 		return(OK);				
 		
 	} else if (sched_class == LINUXSCHED) { /* LINUX SCHEDULER */
-
+	
+		optr = &proctab[currpid];
+		/* extract priority */
+		currprio = optr->goodness - (optr->counter);
 		/* update the counter */
-                optr = &proctab[currpid];
+//                optr = &proctab[currpid];
 		optr->counter = preempt;
 
+                if (optr->counter <= 0){
+			optr->counter = 0;
+			optr->goodness = 0;
+		} else {
+			optr->goodness = (optr->counter) + currprio;
+		}
+		/* push current state to ready queue*/
 		if (optr->pstate == PRCURR) {
                         optr->pstate = PRREADY;
                         insert(currpid, rdyhead, optr->pprio);
                 }
-
-                if (optr->counter <= 0)
-			optr->counter = 0;
-		
+	
 		if(isendofepoch()) {
-		
 			newepochinit();
-		//	kprintf("\n");
 		}
-		//kprintf("c: %d ", currpid);
+
+		
 		newprocess = getnextlinuxproc();
+
+		
 		if (newprocess == (NULLPROC)) {
-			if (currpid == (NULLPROC) || isempty(rdyhead)) {
-				preempt = QUANTUM;
-				return(OK);
-			}
 			nptr = &proctab[ (currpid = dequeue(newprocess)) ];
 			nptr->pstate = PRCURR;
-			#ifdef RTCLOCK
-				preempt = QUANTUM;
-			#endif
+			preempt = QUANTUM;
+			//preempt = nptr->counter;
 			ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
                 	return(OK);
-		} 
-		nptr = &proctab[ (currpid = dequeue(newprocess)) ];
-		nptr->pstate = PRCURR;
-		preempt = nptr->counter;
+		} else {
+			nptr = &proctab[ (currpid = dequeue(newprocess)) ];
+			nptr->pstate = PRCURR;
+			preempt = nptr->counter;
+			ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
+			return(OK);
+		}
+/*		nptr = &proctab[ (currpid = dequeue(newprocess)) ];
+                nptr->pstate = PRCURR;
+                preempt = nptr->counter;
+                ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
+                return(OK);*/
+	} else {
+
+		/* no switch needed if current process priority higher than next*/
+	
+		if ( ( (optr= &proctab[currpid])->pstate == PRCURR) &&
+		   (lastkey(rdytail)<optr->pprio)) {
+			return(OK);
+		}
+	
+		/* force context switch */
+
+		if (optr->pstate == PRCURR) {
+			optr->pstate = PRREADY;
+			insert(currpid,rdyhead,optr->pprio);
+		}
+
+		/* remove highest priority process at end of ready list */
+
+		nptr = &proctab[ (currpid = getlast(rdytail)) ];
+		nptr->pstate = PRCURR;		/* mark it currently running	*/
+		#ifdef	RTCLOCK
+			preempt = QUANTUM;		/* reset preemption counter	*/
+		#endif
+	
 		ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
-		return(OK);
-	}
-
-	/* no switch needed if current process priority higher than next*/
-
-	if ( ( (optr= &proctab[currpid])->pstate == PRCURR) &&
-	   (lastkey(rdytail)<optr->pprio)) {
-		return(OK);
-	}
 	
-	/* force context switch */
-
-	if (optr->pstate == PRCURR) {
-		optr->pstate = PRREADY;
-		insert(currpid,rdyhead,optr->pprio);
+		/* The OLD process returns here when resumed. */
+		return OK;
 	}
-
-	/* remove highest priority process at end of ready list */
-
-	nptr = &proctab[ (currpid = getlast(rdytail)) ];
-	nptr->pstate = PRCURR;		/* mark it currently running	*/
-#ifdef	RTCLOCK
-	preempt = QUANTUM;		/* reset preemption counter	*/
-#endif
-	
-	ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
-	
-	/* The OLD process returns here when resumed. */
-	return OK;
 }

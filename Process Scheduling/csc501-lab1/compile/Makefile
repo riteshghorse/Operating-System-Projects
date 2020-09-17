@@ -50,7 +50,7 @@ SYS =	blkcmp.c	blkequ.c	main.c		stacktrace.c	\
 	unsleep.c	userret.c	wait.c		wakeup.c	\
 	write.c		xdone.c		pci.c		shutdown.c	\
 	math.c		sched.c
-
+	
 TTY =	ttyalloc.c	ttycntl.c	ttygetc.c	ttyiin.c	\
 	ttyinit.c	ttynew.c	ttyopen.c	ttyputc.c	\
 	ttyread.c	ttywrite.c	ttyoin.c
@@ -387,8 +387,8 @@ kprintf.o: ../sys/kprintf.c /usr/include/stdc-predef.h ../h/conf.h \
 kputc.o: ../sys/kputc.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/tty.h
 main.o: ../sys/main.c /usr/include/stdc-predef.h ../h/conf.h \
- ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/stdio.h ../h/proc.h \
- ../h/q.h ../h/lab1.h
+ ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/q.h ../h/lab1.h \
+ ../h/stdio.h ../h/math.h
 mark.o: ../sys/mark.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/mark.h
 math.o: ../sys/math.c /usr/include/stdc-predef.h ../h/conf.h \

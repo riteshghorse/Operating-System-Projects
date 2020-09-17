@@ -61,7 +61,7 @@ struct	pentry	{
 	int	ppagedev;		/* pageing dgram device		*/
 	int	pwaitret;
 	int 	counter;		/* quantum left from last epoch */
-	int 	goodness		/* goodness initialized to pprio*/
+	int 	goodness		/* goodness value */
 };
 
 
