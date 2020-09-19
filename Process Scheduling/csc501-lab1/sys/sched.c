@@ -6,7 +6,7 @@
 #include <lab1.h>
 #include <math.h>
 
-int schedclass;
+int schedclass = 0;	/* initialize to 0 */
 
 void setschedclass (int sched_class)
 {
@@ -17,7 +17,26 @@ int getschedclass ()
 {
 	return schedclass;
 }
+/*
+int getnextexpproc (int randomValue)
+{
+	int process, prev_process;
 
+	process = q[rdytail].qprev;
+	prev_process = q[process].qprev;
+
+	while((randomValue < q[prev_process].qkey) && (prev_process < NPROC) ) {
+		if(q[process].qkey != q[prev_process].qkey){
+			process = prev_process;
+		}
+		prev_process = q[prev_process].qprev;
+	}
+	if(process >= NPROC)
+		return (NULLPROC);
+	else
+		return (process);
+}
+*/
 int getnextexpproc (int expval)
 {
 	int nextprocess;
@@ -34,18 +53,14 @@ int getnextexpproc (int expval)
 	}
 
 	nextprocess = q[rdyhead].qnext;
-	while (expval >= q[nextprocess].qkey) {
+	while (nextprocess < NPROC && expval >= q[nextprocess].qkey) {
 		nextprocess = q[nextprocess].qnext;
 	}
-	/*if (nextprocess >= NPROC)
+	if (nextprocess >= NPROC)
 		return(NULLPROC);
-	if (expval < q[nextprocess].qkey) {*/
 	while (nonempty(nextprocess) && (q[nextprocess].qkey == q[q[nextprocess].qnext].qkey))
 		nextprocess = q[nextprocess].qnext;
 	return nextprocess;
-/*	} else {
-		return(NULLPROC) ;
-	}*/
 }
 
 int getlastexpproc (int process)

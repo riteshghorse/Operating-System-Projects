@@ -28,33 +28,32 @@ int resched()
 	sched_class = getschedclass();
 
 	if (sched_class == EXPDISTSCHED) {	/* EXPONENTIAL SCHEDULER */
-		expval = (int) expdev(lambda);
-		newprocess = getnextexpproc(expval);
+		optr = &proctab[currpid];
+		expval = (int) expdev(lambda);	/* get random number from exp distribution */
 		
-
-		/*if no process in rdy queue 
-		then keep executing current process*/
-		/*if (newprocess == (NULLPROC)) 
-			return (OK);*/
-		if ((optr= &proctab[currpid])->pstate == PRCURR) {
-			if (newprocess == NULLPROC)
-				return (OK);
-		}
-	
 		/* force context switch */
-
-	        if (optr->pstate == PRCURR) {
-        	        optr->pstate = PRREADY;
+        	if (optr->pstate == PRCURR) {
+	                optr->pstate = PRREADY;
                 	insert(currpid,rdyhead,optr->pprio);
         	}
-		nptr = &proctab[ (currpid = dequeue(newprocess)) ];
-		nptr->pstate = PRCURR;
-		#ifdef RTCLOCK
-			preempt = QUANTUM;
-		#endif
-		ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
-		return(OK);				
 		
+		newprocess = getnextexpproc(expval);
+
+		/* remove the next highest priority process from remaining of ready list */
+		if(newprocess < NPROC)
+			currpid = dequeue(newprocess);
+		else
+			currpid = (EMPTY);
+		nptr = &proctab[currpid];	
+		nptr->pstate = PRCURR;		/* mark it currently running	*/
+		#ifdef	RTCLOCK
+			preempt = QUANTUM;		/* reset preemption counter	*/
+		#endif
+	
+		ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
+	
+		/* The OLD process returns here when resumed. */
+		return OK;
 	} else if (sched_class == LINUXSCHED) { /* LINUX SCHEDULER */
 	
 		optr = &proctab[currpid];

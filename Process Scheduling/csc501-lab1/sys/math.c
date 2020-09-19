@@ -4,17 +4,15 @@
 #include <q.h>
 #include <stdio.h>
 #include <math.h>
-
-
 double pow(double x, int y) {
 	int i;
 	double pow_value = 1;
 	if (x == 0) {
 		return 0;
 	}
-	/*if (x == -1) {
-		return ((y%2 == 0) ? 1 : -1);
-	}*/
+	//if (x == -1) {
+	//	return ((y%2 == 0) ? 1 : -1);
+	//}
 	for (i = 1; i <= y; ++i) {
 		pow_value *= x;
 	}
@@ -35,8 +33,8 @@ double log (double x)
         } 
         sum = 2 * sum;
     }
-    else
-        return -1;  
+
+     
     return sum; 
 }
 
