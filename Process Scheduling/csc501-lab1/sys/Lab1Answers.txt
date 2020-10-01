@@ -1,0 +1,37 @@
+1. What are the advantages and disadvantages of each of the two scheduling policies? Also, give the advantages and disadvantages of the round robin scheduling policy originally implemented in Xinu.
+Answer:
+
+EXPONENTIAL SCHEDULER:
+	Advantages:
+	1. As we are selecting a process for execution based on a random number following exponential distribution, it is guaranteed that all processes in the ready state get a chance to execute at some point. Thus it avoids starvation.
+
+	Disadvantages:
+	1. If we have a large number of processes with less priority and one or two processes with large priority then processes with larger priority will not get much time for execution even though their priority is high. This may prevent important processes to progress slowly and hence slowing the important tasks.
+	2. Similarly, if we have a large number of processes with high priority and less processes with low priority, still according to the given exponential scheduler, higher priority processes won't get much time to execute.
+
+
+LINUX SCHEDULER:
+	Advantages:
+	1. No process get the same CPU time in every epoch. Depening upon its execution time in previous epoch, a new quantum is assigned in the current epoch.
+	2. No starvation. Every process get a chance to execute.
+
+	Disadvantages:
+	1. Change of priority is not considered in the current epoch. The priority of process may be lowered in the middle of an epoch as it didn't deserve much time but this change is reflected in the next epoch.
+	2. Similarly, a newly created process in the middle of an epoch is not considered for execution until the next epoch. An important process may have to wait for longer time than usual for execution.
+
+
+Round Robin Scheduling policy in XINU:
+	Advantages:
+	1. Higher priority processes get even time for execution.
+
+	Disadvantages:
+	1. The processes with low priority suffers starvation when there are high priority processes ready for execution.
+
+
+2. Describe the way each of the schedulers affects the NULL process.
+Answer:
+EXPONENTIAL SCHEDULER:
+If there are no processes to execute in the ready queue then the NULL process is scheduled.
+
+LINUX SCHEDULER:
+NULL process has priority 0. So its goodness value is also 0. Therefore, it is never scheduled.
