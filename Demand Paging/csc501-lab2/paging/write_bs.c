@@ -12,7 +12,9 @@ int write_bs(char *src, bsd_t bs_id, int page) {
      page.
   */
    char * phy_addr = BACKING_STORE_BASE + bs_id*BACKING_STORE_UNIT_SIZE + page*NBPG;
+   if (phy_addr == NULLPTR)
+	return(SYSERR);
    bcopy((void*)src, phy_addr, NBPG);
-
+   return(OK);
 }
 

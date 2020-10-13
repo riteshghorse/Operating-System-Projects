@@ -14,8 +14,8 @@
 
 /*#define DETAIL */
 #define HOLESIZE	(600)	
-#define	HOLESTART	(640 * 1024)
-#define	HOLEEND		((1024 + HOLESIZE) * 1024)  
+#define	HOLESTART	(160 * 1024)	//(640 * 1024)
+#define	HOLEEND		(405 * 1024)	//((1024 + HOLESIZE) * 1024)  
 /* Extra 600 for bootp loading, and monitor */
 
 extern	int	main();	/* address of user's main prog	*/
@@ -23,6 +23,7 @@ extern	int	main();	/* address of user's main prog	*/
 extern	int	start();
 
 LOCAL		sysinit();
+LOCAL		paginginit();	/* for paging */
 
 /* Declarations of major kernel variables */
 struct	pentry	proctab[NPROC]; /* process table			*/
@@ -77,7 +78,7 @@ nulluser()				/* babysit CPU when no one is home */
 
 	kprintf("system running up!\n");
 	sysinit();
-
+	paginginit()		/* init paging ds    */
 	enable();		/* enable interrupts */
 
 	sprintf(vers, "PC Xinu %s", VERSION);
@@ -210,9 +211,28 @@ sysinit()
 
 	rdytail = 1 + (rdyhead=newqueue());/* initialize ready list */
 
-
 	return(OK);
 }
+
+/*------------------------------------------------------------------------
+ *  *  paginginit  --  initialize paging data structeres 
+ *  *----------------------------------------------------------------------
+ *    
+ */
+
+LOCAL
+paginginit ()
+{
+	init_bsm () 			/* initialize bs map    	*/
+	init_frm ();			/* initialize frame map 	*/
+	init_global_pagetables ();	/* page table for 16M    	*/
+	init_page_directory ()		/* initialize page directory	*/
+	setcr3 (proctab[NULLPROC].pdbr) /* set PDBR for null proc   	*/
+	enablepaging ()			/* enable paging 		*/			
+			/* page fault isr */
+				/* enable paging  */
+}
+
 
 stop(s)
 char	*s;

@@ -43,10 +43,11 @@ typedef struct{
 } virt_addr_t;
 
 typedef struct{
+  int bs_access;			/* 1 for private, 0 for public -*/
   int bs_status;			/* MAPPED or UNMAPPED		*/
-  int bs_pid;				/* process id using this slot   */
-  int bs_vpno;				/* starting virtual page number */
-  int bs_npages;			/* number of pages in the store */
+  int bs_pid[NPROC];				/* process id using this slot   */
+  int bs_vpno[NPROC];				/* starting virtual page number */
+  int bs_npages[NPROC];			/* number of pages in the store */
   int bs_sem;				/* semaphore mechanism ?	*/
 } bs_map_t;
 
@@ -61,6 +62,10 @@ typedef struct{
 
 extern bs_map_t bsm_tab[];
 extern fr_map_t frm_tab[];
+
+/* ds for paging */
+extern pt_t globalpt[];
+
 /* Prototypes for required API calls */
 SYSCALL xmmap(int, bsd_t, int);
 SYSCALL xunmap(int);
@@ -91,3 +96,7 @@ SYSCALL write_bs(char *, bsd_t, int);
 
 #define BACKING_STORE_BASE	0x00800000
 #define BACKING_STORE_UNIT_SIZE 0x00100000
+
+#define NBS 		8
+#define MAX_PDE		1024
+#define MAX_PTE		1024

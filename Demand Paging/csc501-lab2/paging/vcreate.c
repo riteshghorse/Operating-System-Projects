@@ -28,7 +28,23 @@ SYSCALL vcreate(procaddr,ssize,hsize,priority,name,nargs,args)
 	long	args;			/* arguments (treated like an	*/
 					/* array in the code)		*/
 {
-	kprintf("To be implemented!\n");
+/*	kprintf("To be implemented!\n");*/
+	STATWORD 	ps;
+	pid_t	 	pid;
+	struct pentry 	*pptr;
+	
+	disable(ps);
+	pid = create(procaddr, ssize, priority, name, nargs, args);
+	/* error in creating a new process */
+	if (pid == (SYSERR)) {
+		restore (ps);
+		return(SYSERR);
+	}	
+	
+	pptr = &proctab[pid];
+	pptr->vhpnpages = hsize;	/* set heap size */
+	
+	restore(ps);
 	return OK;
 }
 

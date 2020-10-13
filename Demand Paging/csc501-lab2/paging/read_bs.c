@@ -11,7 +11,10 @@ SYSCALL read_bs(char *dst, bsd_t bs_id, int page) {
      and write beginning at dst.
   */
    void * phy_addr = BACKING_STORE_BASE + bs_id*BACKING_STORE_UNIT_SIZE + page*NBPG;
+   if (phy_addr == NULLPTR)
+	return(SYSERR);
    bcopy(phy_addr, (void*)dst, NBPG);
+   return(OK);
 }
 
 
