@@ -228,9 +228,7 @@ paginginit ()
 	init_global_pagetables ();	/* page table for 16M    	*/
 	init_page_directory ()		/* initialize page directory	*/
 	setcr3 (proctab[NULLPROC].pdbr) /* set PDBR for null proc   	*/
-	enablepaging ()			/* enable paging 		*/			
-			/* page fault isr */
-				/* enable paging  */
+	enablepaging ()			/* enable paging 		*/		  set_evec (14, pfintr)	          /* page fault isr 		  */
 }
 
 

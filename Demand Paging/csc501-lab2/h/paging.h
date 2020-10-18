@@ -49,6 +49,7 @@ typedef struct{
   int bs_vpno[NPROC];				/* starting virtual page number */
   int bs_npages[NPROC];			/* number of pages in the store */
   int bs_sem;				/* semaphore mechanism ?	*/
+  int bs_refcnt;			/* reference count 		*/
 } bs_map_t;
 
 typedef struct{

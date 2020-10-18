@@ -87,6 +87,28 @@ void init_pde (pd_t *pde)
         pde->pd_base = 0;
 }
 
+int newpagetable (int pid)
+{
+	int i, pframe;
+	int rc, ptframe;
+	pt_t *pt;
+
+	rc = get_frm (&pframe);
+	if (rc == (SYSERR))
+		return(SYSERR);
+
+	ptframe = FRAME0 + pframe;
+	init_frame_tab (pframe);
+	frm_tab[pframe].fr_status = FRM_MAPPED;
+	frm_tab[pframe].fr_pid = pid;
+	
+	for (i = 0; i < 1024; ++i) {
+		*pt = (pt_t*)(ptframe * NBPG + i * sizeof(pt_t));
+		init_pte (pt);			
+	}		
+	return pframe;
+}
+
 SYSCALL setcr3 (unsigned long pdbr)
 {
 	STATWORD ps;
@@ -134,7 +156,21 @@ SYSCALL setcr0 (unsigned long cr0)
 void enablepaging ()
 {
 	unsigned long cr0;
-	getcr0(&cr0);
+	getcr0 (&cr0);
 	cr0 = (cr0 | ((0x1<<31) | 0x1));
 	setcr0 (cr0);
+}
+
+SYSCALL getcr2 (unsigned long *cr2)
+{
+	STATWORD ps;
+	unsigned long eax;
+	disable (ps);
+	asm ("pushl %eax");
+	asm ("movl %cr2,%eax");
+	asm ("movl %eax,eax");
+	asm ("popl %eax");
+	*cr2 = eax;
+	restore (ps);
+	return(OK);
 }

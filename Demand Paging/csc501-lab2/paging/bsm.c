@@ -83,6 +83,22 @@ SYSCALL free_bsm(int i)
  */
 SYSCALL bsm_lookup(int pid, long vaddr, int* store, int* pageth)
 {
+	STATWORD ps;
+	int i, vpno = vaddr / NBPG;
+	disable (ps);
+
+	for (i = 0; i < NBS; ++i) {
+		if (bsm_tab[i].bs_status == BSM_MAPPED) {
+			if (bsm_tab[i].bs_pid[pid]==pid && bsm_tab[i].bs_vpno[pid]>=vpno) {
+				*store = i;
+				*pageth = bsm_tab[i].bs_vpno[pid];
+				restore (ps);
+				return(OK); 
+			}
+		}
+	}
+	restore (ps);
+	return(SYSERR);
 }
 
 

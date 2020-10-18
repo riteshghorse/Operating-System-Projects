@@ -61,7 +61,7 @@ SYSCALL free_frm(int i)
   return OK;
 }
 
-void init_frame_tab ()
+void init_frame_tab (int frame_id)
 {
 	frm_tab[frame_id].fr_status = FRM_UNMAPPED;
         frm_tab[frame_id].fr_pid = -1;
