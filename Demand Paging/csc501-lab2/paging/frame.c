@@ -18,7 +18,7 @@ SYSCALL init_frm()
 	disable(ps);
 	for (i = 0; i < NFRAMES; ++i) {
 		frm_tab[i].fr_status = FRM_UNMAPPED;
-		frm_tab[i].fr_pid = BADPID
+		frm_tab[i].fr_pid = BADPID;
 		frm_tab[i].fr_vpno = -1;
 		frm_tab[i].fr_refcnt = 0;
 		frm_tab[i].fr_type = -1;
@@ -67,6 +67,6 @@ void init_frame_tab (int frame_id)
         frm_tab[frame_id].fr_pid = -1;
         frm_tab[frame_id].fr_vpno = -1;
         frm_tab[frame_id].fr_refcnt = 0;
-        frm_tab[frame_id].fr_type = FRM_TBL;
+        frm_tab[frame_id].fr_type = FR_TBL;
         frm_tab[frame_id].fr_dirty = 0;
 }

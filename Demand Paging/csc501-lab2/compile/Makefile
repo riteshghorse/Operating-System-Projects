@@ -57,7 +57,7 @@ TTY =	ttyalloc.c	ttycntl.c	ttygetc.c	ttyiin.c	\
 PG  =   get_bs.c        release_bs.c    read_bs.c       write_bs.c      \
         control_reg.c   bsm.c           policy.c        \
         frame.c         pfint.c         dump32.c        vcreate.c       \
-        xm.c            vgetmem.c       vfreemem.c
+        xm.c            vgetmem.c       vfreemem.c	init_pages.c
 
 SRC = ${COM} ${TTY} ${MON} ${SYS}
 
@@ -373,14 +373,15 @@ monudp.o: ../mon/monudp.c /usr/include/stdc-predef.h \
  ../h/./mon/montftp.h ../h/stdio.h
 bsm.o: ../paging/bsm.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/paging.h ../h/proc.h
-control_reg.o: ../paging/control_reg.c /usr/include/stdc-predef.h \
- ../h/conf.h ../h/kernel.h ../h/systypes.h ../h/mem.h
 dump32.o: ../paging/dump32.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h
 frame.o: ../paging/frame.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/paging.h
 get_bs.o: ../paging/get_bs.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/paging.h
+init_pages.o: ../paging/init_pages.c /usr/include/stdc-predef.h \
+ ../h/conf.h ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h \
+ ../h/paging.h
 pfint.o: ../paging/pfint.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/paging.h
 policy.o: ../paging/policy.c /usr/include/stdc-predef.h ../h/conf.h \
@@ -469,7 +470,8 @@ kprintf.o: ../sys/kprintf.c /usr/include/stdc-predef.h ../h/conf.h \
 kputc.o: ../sys/kputc.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/tty.h
 main.o: ../sys/main.c /usr/include/stdc-predef.h ../h/conf.h \
- ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/stdio.h
+ ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/stdio.h \
+ ../h/paging.h
 mark.o: ../sys/mark.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/mark.h
 mkpool.o: ../sys/mkpool.c /usr/include/stdc-predef.h ../h/conf.h \

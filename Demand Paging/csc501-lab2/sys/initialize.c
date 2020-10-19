@@ -78,7 +78,7 @@ nulluser()				/* babysit CPU when no one is home */
 
 	kprintf("system running up!\n");
 	sysinit();
-	paginginit()		/* init paging ds    */
+	paginginit();		/* init paging ds    */
 	enable();		/* enable interrupts */
 
 	sprintf(vers, "PC Xinu %s", VERSION);
@@ -223,12 +223,14 @@ sysinit()
 LOCAL
 paginginit ()
 {
-	init_bsm () 			/* initialize bs map    	*/
+	SYSCALL	pfintr();
+	init_bsm (); 			/* initialize bs map    	*/
 	init_frm ();			/* initialize frame map 	*/
 	init_global_pagetables ();	/* page table for 16M    	*/
-	init_page_directory ()		/* initialize page directory	*/
-	setcr3 (proctab[NULLPROC].pdbr) /* set PDBR for null proc   	*/
-	enablepaging ()			/* enable paging 		*/		  set_evec (14, pfintr)	          /* page fault isr 		  */
+	init_page_directory (NULLPROC);	/* initialize page directory	*/
+	setcr3 (proctab[NULLPROC].pdbr); /* set PDBR for null proc   	*/
+	enablepaging ();			/* enable paging 		*/
+	set_evec (14, pfintr);	          /* page fault isr 		  */
 }
 
 

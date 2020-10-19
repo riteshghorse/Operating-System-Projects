@@ -30,9 +30,11 @@ SYSCALL vcreate(procaddr,ssize,hsize,priority,name,nargs,args)
 {
 /*	kprintf("To be implemented!\n");*/
 	STATWORD 	ps;
-	pid_t	 	pid;
+	int	 	pid;
 	struct pentry 	*pptr;
-	
+	bsd_t 		bs_id;	
+	int		rc;
+
 	disable(ps);
 	pid = create(procaddr, ssize, priority, name, nargs, args);
 	/* error in creating a new process */
@@ -40,28 +42,27 @@ SYSCALL vcreate(procaddr,ssize,hsize,priority,name,nargs,args)
 		restore (ps);
 		return(SYSERR);
 	}	
-	
-	pptr = &proctab[pid];
-	pptr->vhpnpages = hsize;	/* set heap size */
-	
-	restore(ps);
-	return OK;
-}
 
-/*------------------------------------------------------------------------
- * newpid  --  obtain a new (free) process id
- *------------------------------------------------------------------------
- */
-LOCAL	newpid()
-{
-	int	pid;			/* process id to return		*/
-	int	i;
-
-	for (i=0 ; i<NPROC ; i++) {	/* check all NPROC slots	*/
-		if ( (pid=nextproc--) <= 0)
-			nextproc = NPROC-1;
-		if (proctab[pid].pstate == PRFREE)
-			return(pid);
+	rc = get_bsm (&bs_id);
+	if (rc == (SYSERR)) {
+		restore (ps);
+		return(SYSERR);
 	}
-	return(SYSERR);
+	
+	rc = bsm_map (pid, 4096, bs_id, hsize);
+	if (rc == (SYSERR)) {
+		restore (ps);
+		return(SYSERR);
+	}		
+
+	bsm_tab[bs_id].access = 1;
+	proctab[pid].store = bs_id;
+	proctab[pid].vhpno = 4096;
+	proctab[pid].vhpnpages = hsize;
+	proctab[pid].vmemlist->mnext = (struct mblock*)(4096 *  NBPG);
+	proctab[pid].vmemlist->mlen = (int)truncew(hsize * NBPG);
+
+	restore(ps);
+	return pid;
 }
+

@@ -32,7 +32,7 @@ SYSCALL create(procaddr,ssize,priority,name,nargs,args)
 	unsigned long	*a;		/* points to list of args	*/
 	unsigned long	*saddr;		/* stack address		*/
 	int		INITRET();
-
+	int 		rc;		/* check return code 		*/
 	disable(ps);
 	if (ssize < MINSTK)
 		ssize = MINSTK;
@@ -69,6 +69,10 @@ SYSCALL create(procaddr,ssize,priority,name,nargs,args)
 
 	/* for demand paging */
 //	pptr->pdbr = ;
+	pptr->store = -1;
+	pptr->vhpno = -1;
+	pptr->vhpnpages = -1;
+	pptr->vmemlist = NULL;
 
 		/* Bottom of stack */
 	*saddr = MAGIC;
@@ -99,8 +103,14 @@ SYSCALL create(procaddr,ssize,priority,name,nargs,args)
 	*--saddr = 0;		/* %edi */
 	*pushsp = pptr->pesp = (unsigned long)saddr;
 
-	restore(ps);
 
+	/* set pdbr and assign global page tables */
+	rc = init_page_directory (pptr->pid);
+	if (rc == SYSERR) {
+		restore (ps);
+		return(SYSERR);
+	}	
+	restore(ps);
 	return(pid);
 }
 

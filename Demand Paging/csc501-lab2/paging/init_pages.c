@@ -3,6 +3,7 @@
 #include <proc.h>
 #include <paging.h>
 
+unsigned long reg;
 
 SYSCALL init_global_pagetables ()
 {
@@ -31,7 +32,7 @@ SYSCALL init_global_pagetables ()
 }
 
 
-SYSCALL init_page_directory ()
+SYSCALL init_page_directory (int pid)
 {
 	int i, phyframe, rc, pd_base;
 	
@@ -43,8 +44,8 @@ SYSCALL init_page_directory ()
 	init_frame_tab ();
 	frm_tab[phyframe].fr_status = FRM_MAPPED;
         frm_tab[phyframe].fr_pid = NULLPROC;
-	proctab[currpid].pdbr = ((FRAME0 + phyframe) * NBPG);
-	pd_base = proctab[currpid].pdbr;
+	proctab[pid].pdbr = ((FRAME0 + phyframe) * NBPG);
+	pd_base = proctab[pid].pdbr;
 	for (i = 0; i < MAX_PDE ; ++i) {
 		pd_t *pde = (pd_t*)(pd_base + (i * sizeof(pd_t)));
 		init_pde (pde);
@@ -103,7 +104,7 @@ int newpagetable (int pid)
 	frm_tab[pframe].fr_pid = pid;
 	
 	for (i = 0; i < 1024; ++i) {
-		*pt = (pt_t*)(ptframe * NBPG + i * sizeof(pt_t));
+		pt = (pt_t*)(ptframe * NBPG + i * sizeof(pt_t));
 		init_pte (pt);			
 	}		
 	return pframe;
@@ -111,10 +112,11 @@ int newpagetable (int pid)
 
 SYSCALL setcr3 (unsigned long pdbr)
 {
+	reg = pdbr;
 	STATWORD ps;
-	disable (ps)
+	disable (ps);
 	asm ("pushl %eax");
-	asm ("movl pdbr,%eax");
+	asm ("movl reg,%eax");
 	asm ("movl %eax,%cr3");
 	asm ("popl %eax");	
 	restore (ps);
@@ -130,23 +132,24 @@ SYSCALL setcr3 (unsigned long pdbr)
 SYSCALL getcr0 (unsigned long *cr0)
 {
         STATWORD ps;
-        unsigned long eax;
+//        unsigned long eax;
         disable (ps);
         asm ("pushl %eax");
         asm ("movl %cr0,%eax");
-        asm ("movl %eax,eax");
+        asm ("movl %eax,reg");
         asm ("popl %eax");
-        *cr0 = eax;
+        *cr0 = reg;
         restore (ps);
         return(OK);
 }
 
 SYSCALL setcr0 (unsigned long cr0)
 {
+ 	reg = cr0;
         STATWORD ps;
         disable (ps);
 	asm ("pushl %eax");
-        asm ("movl cr0,%eax");
+        asm ("movl reg,%eax");
         asm ("movl %eax,%cr0");
         asm ("popl %eax");
         restore (ps);
@@ -164,13 +167,13 @@ void enablepaging ()
 SYSCALL getcr2 (unsigned long *cr2)
 {
 	STATWORD ps;
-	unsigned long eax;
+	//unsigned long eax;
 	disable (ps);
 	asm ("pushl %eax");
 	asm ("movl %cr2,%eax");
-	asm ("movl %eax,eax");
+	asm ("movl %eax,reg");
 	asm ("popl %eax");
-	*cr2 = eax;
+	*cr2 = reg;
 	restore (ps);
 	return(OK);
 }
