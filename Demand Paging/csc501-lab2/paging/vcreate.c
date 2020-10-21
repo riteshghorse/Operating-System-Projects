@@ -55,7 +55,7 @@ SYSCALL vcreate(procaddr,ssize,hsize,priority,name,nargs,args)
 		return(SYSERR);
 	}		
 
-	bsm_tab[bs_id].access = 1;
+	bsm_tab[bs_id].bs_access = 1;
 	proctab[pid].store = bs_id;
 	proctab[pid].vhpno = 4096;
 	proctab[pid].vhpnpages = hsize;

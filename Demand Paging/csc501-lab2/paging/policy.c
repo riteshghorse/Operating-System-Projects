@@ -14,9 +14,8 @@ SYSCALL srpolicy(int policy)
 {
   /* sanity check ! */
 
-  kprintf("To be implemented!\n");
-
-  return OK;
+	page_replace_policy = policy;
+	return OK;
 }
 
 /*-------------------------------------------------------------------------

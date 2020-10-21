@@ -103,13 +103,16 @@ SYSCALL create(procaddr,ssize,priority,name,nargs,args)
 	*--saddr = 0;		/* %edi */
 	*pushsp = pptr->pesp = (unsigned long)saddr;
 
-
+//	kprintf("in main here\n");
+	//sleep(10);
 	/* set pdbr and assign global page tables */
-	rc = init_page_directory (pptr->pid);
+	rc = init_page_directory (pid);
 	if (rc == SYSERR) {
 		restore (ps);
 		return(SYSERR);
 	}	
+//	kprintf("main beginning\n");
+//	sleep(10);
 	restore(ps);
 	return(pid);
 }

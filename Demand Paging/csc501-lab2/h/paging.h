@@ -92,6 +92,9 @@ SYSCALL write_bs(char *, bsd_t, int);
 #define FR_TBL		1
 #define FR_DIR		2
 
+#define FR_CLEAN	0
+#define FR_DIRTY	1
+
 #define SC 3
 #define AGING 4
 
@@ -101,3 +104,4 @@ SYSCALL write_bs(char *, bsd_t, int);
 #define NBS 		8
 #define MAX_PDE		1024
 #define MAX_PTE		1024
+

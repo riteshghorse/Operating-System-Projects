@@ -112,7 +112,8 @@ nulluser()				/* babysit CPU when no one is home */
 	
 	kprintf("clock %sabled\n", clkruns == 1?"en":"dis");
 
-
+//	kprintf("calling main\n");
+//	sleep(10);
 	/* create a process to execute the user's main program */
 	userpid = create(main,INITSTK,INITPRIO,INITNAME,INITARGS);
 	resume(userpid);
@@ -223,14 +224,21 @@ sysinit()
 LOCAL
 paginginit ()
 {
+//	kprintf("in page init\n");
 	SYSCALL	pfintr();
 	init_bsm (); 			/* initialize bs map    	*/
 	init_frm ();			/* initialize frame map 	*/
-	init_global_pagetables ();	/* page table for 16M    	*/
+//	kprintf("done map\n");
+	init_global_pagetables (NULLPROC);	/* page table for 16M    	*/
 	init_page_directory (NULLPROC);	/* initialize page directory	*/
-	setcr3 (proctab[NULLPROC].pdbr); /* set PDBR for null proc   	*/
-	enablepaging ();			/* enable paging 		*/
-	set_evec (14, pfintr);	          /* page fault isr 		  */
+	set_evec (14, (u_long)pfintr); 
+	write_cr3 (proctab[NULLPROC].pdbr); /* set PDBR for null proc   	*/
+//	kprintf("set pdbr\n");
+	enable_paging ();			/* enable paging 		*/
+//	kprintf("enabled paging\n");
+//	set_evec (14, (u_long)pfintr);	          /* page fault isr 		  */
+//	kprintf("done page init\n");
+	return(OK);
 }
 
 

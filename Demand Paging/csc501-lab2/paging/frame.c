@@ -21,8 +21,8 @@ SYSCALL init_frm()
 		frm_tab[i].fr_pid = BADPID;
 		frm_tab[i].fr_vpno = -1;
 		frm_tab[i].fr_refcnt = 0;
-		frm_tab[i].fr_type = -1;
-		frm_tab[i].fr_dirty = 0;
+		frm_tab[i].fr_type = FR_TBL;
+		frm_tab[i].fr_dirty = FR_CLEAN;
 	} 
 	restore(ps);
 	return OK;
@@ -64,9 +64,9 @@ SYSCALL free_frm(int i)
 void init_frame_tab (int frame_id)
 {
 	frm_tab[frame_id].fr_status = FRM_UNMAPPED;
-        frm_tab[frame_id].fr_pid = -1;
+        frm_tab[frame_id].fr_pid = BADPID;
         frm_tab[frame_id].fr_vpno = -1;
         frm_tab[frame_id].fr_refcnt = 0;
         frm_tab[frame_id].fr_type = FR_TBL;
-        frm_tab[frame_id].fr_dirty = 0;
+        frm_tab[frame_id].fr_dirty = FR_CLEAN;
 }

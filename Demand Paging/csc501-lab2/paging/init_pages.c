@@ -5,7 +5,7 @@
 
 unsigned long reg;
 
-SYSCALL init_global_pagetables ()
+SYSCALL init_global_pagetables (int pid)
 {
 	int i, j, phyframe, rc;
 	int frame_base;
@@ -15,17 +15,19 @@ SYSCALL init_global_pagetables ()
 			return(SYSERR);
 		}
 		/* frame mapping for free frame obtained */
-		init_frame_tab ();
+//		init_frame_tab ();
 		frm_tab[phyframe].fr_status = FRM_MAPPED;
-		frm_tab[phyframe].fr_pid = NULLPROC;
-		frame_base = (FRAME0 + phyframe) * NBPG; 
+		frm_tab[phyframe].fr_pid = pid;
+		frm_tab[phyframe].fr_type = FR_PAGE;
+		frame_base = (FRAME0 + phyframe); 
 		for (j = 0; j < MAX_PTE; ++j) {
-			pt_t *pte = (pt_t*)(frame_base + (j * (sizeof(pt_t))));
+			pt_t *pte = (pt_t*)(frame_base*NBPG + (j * (sizeof(pt_t))));
 			init_pte (pte);
 			pte->pt_pres = 1;
 			pte->pt_write = 1;
-			pte->pt_global = 1;
+//			pte->pt_global = 1;
 			pte->pt_base = j + (i * FRAME0);
+			frm_tab[phyframe].fr_refcnt += 1;
 		} 	
 	}
 	return(OK);		
@@ -34,16 +36,24 @@ SYSCALL init_global_pagetables ()
 
 SYSCALL init_page_directory (int pid)
 {
+	kprintf("%d\n", pid);
+/*	if(pid != 0)
+		sleep(10);
+*/	
 	int i, phyframe, rc, pd_base;
+//	kprintf("free frame\n");
 	
 	rc = get_frm (&phyframe);
 	if (rc == (SYSERR)){            /* free frame not found */
+//		kprintf("free frame not found\n");
+		sleep(10);
 		return(SYSERR);
         }
 
-	init_frame_tab ();
+//	init_frame_tab ();
 	frm_tab[phyframe].fr_status = FRM_MAPPED;
-        frm_tab[phyframe].fr_pid = NULLPROC;
+        frm_tab[phyframe].fr_pid = pid;
+	frm_tab[phyframe].fr_type = FR_DIR;
 	proctab[pid].pdbr = ((FRAME0 + phyframe) * NBPG);
 	pd_base = proctab[pid].pdbr;
 	for (i = 0; i < MAX_PDE ; ++i) {
@@ -52,9 +62,13 @@ SYSCALL init_page_directory (int pid)
 		if (i < 4) {
 			pde->pd_pres = 1;
 			pde->pd_base = FRAME0 + i;
+			frm_tab[phyframe].fr_refcnt += 1;
 		}
+		pde->pd_write = 1;
 	}		
-	return(OK);
+//	kprintf("free frame found\n");	
+//	sleep(10);
+return(OK);
 }
 
 
@@ -102,7 +116,7 @@ int newpagetable (int pid)
 	init_frame_tab (pframe);
 	frm_tab[pframe].fr_status = FRM_MAPPED;
 	frm_tab[pframe].fr_pid = pid;
-	
+	frm_tab[pframe].fr_type = FR_PAGE;	
 	for (i = 0; i < 1024; ++i) {
 		pt = (pt_t*)(ptframe * NBPG + i * sizeof(pt_t));
 		init_pte (pt);			
@@ -110,70 +124,4 @@ int newpagetable (int pid)
 	return pframe;
 }
 
-SYSCALL setcr3 (unsigned long pdbr)
-{
-	reg = pdbr;
-	STATWORD ps;
-	disable (ps);
-	asm ("pushl %eax");
-	asm ("movl reg,%eax");
-	asm ("movl %eax,%cr3");
-	asm ("popl %eax");	
-	restore (ps);
-	return(OK);
-}
 
-
-
-/*
- *  *enable paging by setting 31st bit of cr0
- *   * */
-
-SYSCALL getcr0 (unsigned long *cr0)
-{
-        STATWORD ps;
-//        unsigned long eax;
-        disable (ps);
-        asm ("pushl %eax");
-        asm ("movl %cr0,%eax");
-        asm ("movl %eax,reg");
-        asm ("popl %eax");
-        *cr0 = reg;
-        restore (ps);
-        return(OK);
-}
-
-SYSCALL setcr0 (unsigned long cr0)
-{
- 	reg = cr0;
-        STATWORD ps;
-        disable (ps);
-	asm ("pushl %eax");
-        asm ("movl reg,%eax");
-        asm ("movl %eax,%cr0");
-        asm ("popl %eax");
-        restore (ps);
-        return(OK);
-}
-
-void enablepaging ()
-{
-	unsigned long cr0;
-	getcr0 (&cr0);
-	cr0 = (cr0 | ((0x1<<31) | 0x1));
-	setcr0 (cr0);
-}
-
-SYSCALL getcr2 (unsigned long *cr2)
-{
-	STATWORD ps;
-	//unsigned long eax;
-	disable (ps);
-	asm ("pushl %eax");
-	asm ("movl %cr2,%eax");
-	asm ("movl %eax,reg");
-	asm ("popl %eax");
-	*cr2 = reg;
-	restore (ps);
-	return(OK);
-}
