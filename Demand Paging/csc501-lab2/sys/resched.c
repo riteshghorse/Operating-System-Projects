@@ -3,6 +3,7 @@
 #include <conf.h>
 #include <kernel.h>
 #include <proc.h>
+#include <paging.h>
 #include <q.h>
 
 unsigned long currSP;	/* REAL sp of current process */
@@ -21,10 +22,10 @@ int	resched()
 	register struct	pentry	*optr;	/* pointer to old process entry */
 	register struct	pentry	*nptr;	/* pointer to new process entry */
 	register int i;
-
+	int oldpid;
 	disable(PS);
 	/* no switch needed if current process priority higher than next*/
-
+	oldpid = currpid;
 	if ( ( (optr= &proctab[currpid])->pstate == PRCURR) &&
 	   (lastkey(rdytail)<optr->pprio)) {
 		restore(PS);
@@ -82,7 +83,24 @@ int	resched()
 #ifdef	DEBUG
 	PrintSaved(nptr);
 #endif
-	write_cr3 (nptr->pdbr);		/* change pdbr, flush tlb */
+int j;
+	/* update pages to disk in case of dirty pages*/
+	for (j = 4; j < NFRAMES; ++j) {
+		int store,page;
+		if(frm_tab[j].fr_pid==oldpid ) {
+			if(frm_tab[j].fr_type==FR_PAGE && bsm_lookup(oldpid,frm_tab[j].fr_vpno*NBPG,&store,&page)==OK){
+				kprintf("writing\n");
+				write_bs((j+FRAME0)*NBPG,store,page); }
+			}
+		
+		if(frm_tab[j].fr_pid==currpid){
+			if(frm_tab[j].fr_type==FR_PAGE && bsm_lookup(currpid,frm_tab[j].fr_vpno*NBPG,&store,&page)==OK){
+				kprintf("reading\n");
+				read_bs((j+FRAME0)*NBPG,store,page);
+			}
+		}
+	}
+	write_cr3 (nptr->pdbr);	 	/* change pdbr, flush tlb */
 	ctxsw(&optr->pesp, optr->pirmask, &nptr->pesp, nptr->pirmask);
 
 #ifdef	DEBUG

@@ -19,7 +19,7 @@ SYSCALL init_frm()
 	for (i = 0; i < NFRAMES; ++i) {
 		frm_tab[i].fr_status = FRM_UNMAPPED;
 		frm_tab[i].fr_pid = BADPID;
-		frm_tab[i].fr_vpno = -1;
+		frm_tab[i].fr_vpno = 4096;
 		frm_tab[i].fr_refcnt = 0;
 		frm_tab[i].fr_type = FR_TBL;
 		frm_tab[i].fr_dirty = FR_CLEAN;
@@ -56,17 +56,16 @@ SYSCALL get_frm(int* avail)
  */
 SYSCALL free_frm(int i)
 {
-
-  kprintf("To be implemented!\n");
-  return OK;
+	
+	return OK;
 }
 
 void init_frame_tab (int frame_id)
 {
 	frm_tab[frame_id].fr_status = FRM_UNMAPPED;
-        frm_tab[frame_id].fr_pid = BADPID;
-        frm_tab[frame_id].fr_vpno = -1;
-        frm_tab[frame_id].fr_refcnt = 0;
-        frm_tab[frame_id].fr_type = FR_TBL;
-        frm_tab[frame_id].fr_dirty = FR_CLEAN;
+	frm_tab[frame_id].fr_pid = BADPID;
+	frm_tab[frame_id].fr_vpno = -1;
+	frm_tab[frame_id].fr_refcnt = 0;
+	frm_tab[frame_id].fr_type = FR_TBL;
+	frm_tab[frame_id].fr_dirty = FR_CLEAN;
 }
