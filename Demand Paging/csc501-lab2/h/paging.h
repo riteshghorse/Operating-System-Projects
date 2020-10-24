@@ -47,7 +47,7 @@ typedef struct{
   int bs_status;			/* MAPPED or UNMAPPED		*/
   int bs_pid[NPROC];				/* process id using this slot   */
   int bs_vpno[NPROC];				/* starting virtual page number */
-  int bs_npages[NPROC];			/* number of pages in the store */
+  int bs_npages;			/* number of pages in the store */
   int bs_sem;				/* semaphore mechanism ?	*/
   int bs_refcnt;			/* reference count 		*/
 } bs_map_t;

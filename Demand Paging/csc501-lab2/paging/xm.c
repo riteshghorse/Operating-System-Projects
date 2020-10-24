@@ -23,18 +23,21 @@ SYSCALL xmmap(int virtpage, bsd_t source, int npages)
 		return(SYSERR);
 	}
 	/* check if backing store is private and used by other process */
-	if (bsm_tab[source].bs_access == 1 && bsm_tab[source].bs_pid[currpid] != currpid) {
+	if (bsm_tab[source].bs_access == 1) {
 		restore(ps);
 		return(SYSERR);
 	}
-	/* if already mapped */
+	if (bsm_tab[source].bs_status == BSM_MAPPED && npages > bsm_tab[source].bs_npages) {
+		restore(ps);
+		return(SYSERR);
+	}
 	if (bsm_tab[source].bs_status == BSM_UNMAPPED){
-		bsm_tab[source].bs_access = 0;
 		bsm_tab[source].bs_status = BSM_MAPPED;
+		bsm_tab[source].bs_npages = npages;
 	}
 	bsm_tab[source].bs_pid[currpid] = currpid;
 	bsm_tab[source].bs_vpno[currpid] = virtpage;
-	bsm_tab[source].bs_npages[currpid] = npages;
+	bsm_tab[source].bs_refcnt += 1;
 	
 	restore(ps);
 	return(OK);

@@ -22,7 +22,7 @@ SYSCALL release_bs(bsd_t bs_id) {
 
 	bsm_tab[bs_id].bs_pid[currpid] = BADPID;
 	bsm_tab[bs_id].bs_vpno[currpid] = 0;
-	bsm_tab[bs_id].bs_npages[currpid] = 0;
+	bsm_tab[bs_id].bs_npages = 0;
 	bsm_tab[bs_id].bs_refcnt -= 1;
 	if (bsm_tab[bs_id].bs_refcnt <= 0)	
 		bsm_tab[bs_id].bs_status = BSM_UNMAPPED;

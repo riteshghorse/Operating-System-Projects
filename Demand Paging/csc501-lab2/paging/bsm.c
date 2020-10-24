@@ -22,7 +22,7 @@ SYSCALL init_bsm()
 		for (j = 0; j < NPROC; ++j) {
 			bsm_tab[i].bs_pid[j]	= BADPID;
 			bsm_tab[i].bs_vpno[j]	= 0;
-			bsm_tab[i].bs_npages[j]	= 0;
+			bsm_tab[i].bs_npages	= 0;
 		}
 		bsm_tab[i].bs_sem = 0;
 		bsm_tab[i].bs_refcnt = 0;
@@ -118,7 +118,7 @@ SYSCALL bsm_map(int pid, int vpno, int source, int npages)
 	bsm_tab[source].bs_status = BSM_MAPPED;
 	bsm_tab[source].bs_pid[pid] = pid;
 	bsm_tab[source].bs_vpno[pid] = vpno;
-	bsm_tab[source].bs_npages[pid] = npages;
+	bsm_tab[source].bs_npages = npages;
 	bsm_tab[source].bs_sem = 0;
 	bsm_tab[source].bs_refcnt += 1;	
 	restore(ps);
