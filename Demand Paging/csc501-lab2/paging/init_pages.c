@@ -36,7 +36,7 @@ SYSCALL init_global_pagetables (int pid)
 
 SYSCALL init_page_directory (int pid)
 {
-	kprintf("%d\n", pid);
+	// kprintf("%d\n", pid);
 /*	if(pid != 0)
 		sleep(10);
 */	

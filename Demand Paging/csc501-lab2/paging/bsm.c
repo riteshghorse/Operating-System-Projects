@@ -90,7 +90,7 @@ SYSCALL bsm_lookup(int pid, long vaddr, int* store, int* pageth)
 	for (i = 0; i < NBS; ++i) {
 	//	if (bsm_tab[i].bs_status == BSM_MAPPED) {
 			if (bsm_tab[i].bs_pid[pid]==pid && bsm_tab[i].bs_vpno[pid]<= vpno) {
-				kprintf("in if lookup\n");
+				// kprintf("in if lookup\n");
 				*store = i;
 				*pageth = vpno - bsm_tab[i].bs_vpno[pid];
 				restore (ps);

@@ -28,15 +28,15 @@ WORD	*vgetmem(nbytes)
 		p != (struct mblock *)NULL;
 		q = p, p = p->mnext) {
 
-		if (p->mlen == nbytes) {
-			q->mnext = p->mnext;
+		if (q->mlen == nbytes) {
+			q->mnext = (struct mblock*)((unsigned)p + nbytes);
+			q->mlen = 0;
 			restore (ps);
 			return( (WORD *)p);
 		} else if (p->mlen > nbytes) {
 			leftover = (struct mblock *)( (unsigned)p + nbytes);
 			q->mnext = leftover;
-			leftover->mnext = p->mnext;
-			leftover->mlen = p->mlen - nbytes;
+			q->mlen = q->mlen - nbytes;
 			restore (ps);
 			return( (WORD*)p);
 		}

@@ -25,17 +25,17 @@ SYSCALL	vfreemem(block, size)
 		restore (ps);
 		return(SYSERR);
 	}
-	size = (unsigned)roundmb(size);
+	size = (unsigned int)roundmb(size);
 	for (p = pptr->vmemlist->mnext, q = &(pptr->vmemlist);
 		p != (struct mblock *)NULL && p<block;
-		q = p, p = p->mnext);
+		q = p, p = p->mnext){
 
-	if (((top=q->mlen+(unsigned)q)>(unsigned)block && q!= &memlist) ||
+	if (((top=q->mlen+(unsigned)q)>(unsigned)block && q!= &(pptr->vmemlist)) ||
             (p!=NULL && (size+(unsigned)block) > (unsigned)p)) {
                 restore(ps);
                 return(SYSERR);
         }
-        if (q != &memlist && top == (unsigned)block)
+        if (q != &(pptr->vmemlist) && (q->mlen + (unsigned)q) == (unsigned)block)
                         q->mlen += size;
         else {
                 block->mlen = size;
@@ -47,6 +47,7 @@ SYSCALL	vfreemem(block, size)
                 q->mlen += p->mlen;
                 q->mnext = p->mnext;
         }
+	}
 	restore (ps);
 	return(OK);
 }

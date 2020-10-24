@@ -23,13 +23,13 @@ SYSCALL pfint()
 	addr = (virt_addr_t*)&fa_addr;
 	
 	pd_t *pd = (pd_t*)(proctab[currpid].pdbr + addr->pd_offset * (sizeof(pd_t)));
-	kprintf("before\n");
+	// kprintf("before\n");
 /*	if(bsm_lookup(currpid, fa_addr, &store, &pageth) == SYSERR ){
 		kill(currpid);
 		restore(ps);
 		return SYSERR;
 	}*/
-	kprintf("after\n");
+	// kprintf("after\n");
 
 	if (pd->pd_pres == 0) {
                 pdframe = newpagetable(currpid);
@@ -38,27 +38,26 @@ SYSCALL pfint()
 		pd->pd_write = 1;
 		pd->pd_base = FRAME0 + pdframe;
         }	
-	kprintf("%u ", pd->pd_base);
+	// kprintf("%u ", pd->pd_base);
 	pt_t *pt = (pt_t*)((pd->pd_base)*NBPG + addr->pt_offset * (sizeof(pt_t)));
 	init_pte (pt);
 	if (pt->pt_pres == 0) {
 		rc = bsm_lookup (currpid, fa_addr, &store, &pageth);
         	if (rc == (SYSERR)) {
-	                kprintf("killed\n");
-			kill (currpid);
+	                // kprintf("killed\n");
+					kill (currpid);
                 	restore (ps);
         	        return(SYSERR);
   	      	}
 	
 	}
-	kprintf("getting frm\n");
+	// kprintf("getting frm\n");
 	rc = get_frm(&ptframe);
 	if (rc == (SYSERR)) {
 	//	kill (currpid);
 		restore (ps);
 		return(SYSERR);
 	}
-	kprintf("got frame\n");
 	init_frame_tab (ptframe);
 	frm_tab[ptframe].fr_status = FRM_MAPPED;	
 	frm_tab[ptframe].fr_pid = currpid;
@@ -72,7 +71,7 @@ SYSCALL pfint()
 	pt->pt_write = 1;
 	pt->pt_acc = 1;
 	pt->pt_base = FRAME0 + ptframe;
-	kprintf(" %u\n", pt->pt_base);
+	// kprintf(" %u\n", pt->pt_base);
 	/* flush tlb */
 	write_cr3 (proctab[currpid].pdbr);
 
