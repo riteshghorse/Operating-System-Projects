@@ -22,12 +22,17 @@ SYSCALL xmmap(int virtpage, bsd_t source, int npages)
 		restore(ps);
 		return(SYSERR);
 	}
+
 	/* check if backing store is private and used by other process */
 	if (bsm_tab[source].bs_access == 1) {
 		restore(ps);
 		return(SYSERR);
 	}
 	if (bsm_tab[source].bs_status == BSM_MAPPED && npages > bsm_tab[source].bs_npages) {
+		restore(ps);
+		return(SYSERR);
+	}
+	if (bsm_tab[source].bs_pid[currpid] == currpid) {
 		restore(ps);
 		return(SYSERR);
 	}
@@ -51,6 +56,14 @@ SYSCALL xmmap(int virtpage, bsd_t source, int npages)
  */
 SYSCALL xmunmap(int virtpage)
 {
-	
+	STATWORD ps;
+	int rc;
+	disable (ps);
+	rc = bsm_unmap (currpid, virtpage, 0);
+	if (rc == (SYSERR)) {
+		restore (ps);
+		return(SYSERR);
+	}
+	restore (ps);
 	return SYSERR;
 }

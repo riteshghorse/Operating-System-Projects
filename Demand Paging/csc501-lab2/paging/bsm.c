@@ -69,8 +69,12 @@ SYSCALL free_bsm(int i)
 	
 	bsm_tab[i].bs_access = 0;
 	bsm_tab[i].bs_status = BSM_UNMAPPED;
-	for(p = 0; p < NPROC; ++p)
+	for (p = 0; p < NPROC; ++p) {
 		bsm_tab[i].bs_pid[p] = BADPID;
+		bsm_tab[i].bs_vpno[p] = 4096;
+	}
+	bsm_tab[i].bs_npages = 0;
+	bsm_tab[i].bs_refcnt = 0;
 	bsm_tab[i].bs_sem = 0;	
 
 	restore(ps);
@@ -114,7 +118,6 @@ SYSCALL bsm_map(int pid, int vpno, int source, int npages)
 
 	STATWORD ps;
 	disable(ps);
-	bsm_tab[source].bs_access = 0;;
 	bsm_tab[source].bs_status = BSM_MAPPED;
 	bsm_tab[source].bs_pid[pid] = pid;
 	bsm_tab[source].bs_vpno[pid] = vpno;
@@ -133,6 +136,29 @@ SYSCALL bsm_map(int pid, int vpno, int source, int npages)
  */
 SYSCALL bsm_unmap(int pid, int vpno, int flag)
 {
+
+	if (isbadpid(pid))
+		return(SYSERR);
+	if (vpno < 4096) 
+		return(SYSERR);
+
+	STATWORD ps;
+	int rc, store, pageth;
+	long vaddr;
+	disable(ps);
+	vaddr = vpno * NBPG;
+	rc = bsm_lookup (pid, vaddr, &store, &pageth);
+	if (rc == (SYSERR)) {
+		restore (ps);
+		return(SYSERR);
+	}
+	bsm_tab[store].bs_pid[pid] = BADPID;
+	bsm_tab[store].bs_vpno[pid] = 4096;
+	bsm_tab[store].bs_refcnt -= 1;
+	if (bsm_tab[store].bs_refcnt <= 0)	
+		free_bsm (store);
+	restore(ps);
+	return(OK);
 }
 
 

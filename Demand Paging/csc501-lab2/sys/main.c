@@ -60,7 +60,7 @@ void proc_test1(int *ret) {
 		}
 		addr1 += NBPG;       //increment by one page each time
 	}
-
+// kprintf("before um\n");
 	xmunmap(0x40000000>>12);
 	release_bs(MYBS1);
 	return;
@@ -138,8 +138,9 @@ void proc1_test3(int i,int* ret) {
 	int r;
 
 	get_bs(i, 100);
-
+	kprintf("%d %d %d\n", i, bsm_tab[i].bs_npages, bsm_tab[i].bs_status);
 	if (xmmap(MYVPNO1, i, 100) == SYSERR) {
+		kprintf("exit here\n");
 	    *ret = TFAILED;
 	    return 0;
 	}

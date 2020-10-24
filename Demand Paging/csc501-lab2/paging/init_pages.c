@@ -41,7 +41,6 @@ SYSCALL init_page_directory (int pid)
 		sleep(10);
 */	
 	int i, phyframe, rc, pd_base;
-//	kprintf("free frame\n");
 	
 	rc = get_frm (&phyframe);
 	if (rc == (SYSERR)){            /* free frame not found */
@@ -52,7 +51,7 @@ SYSCALL init_page_directory (int pid)
 
 //	init_frame_tab ();
 	frm_tab[phyframe].fr_status = FRM_MAPPED;
-        frm_tab[phyframe].fr_pid = pid;
+	frm_tab[phyframe].fr_pid = pid;
 	frm_tab[phyframe].fr_type = FR_DIR;
 	proctab[pid].pdbr = ((FRAME0 + phyframe) * NBPG);
 	pd_base = proctab[pid].pdbr;
@@ -75,7 +74,7 @@ return(OK);
 void init_pte (pt_t *pte)
 {
 	pte->pt_pres = 0;
-        pte->pt_write = 0;
+        pte->pt_write = 1;
         pte->pt_user = 0;
         pte->pt_pwt = 0;
         pte->pt_pcd = 0;
