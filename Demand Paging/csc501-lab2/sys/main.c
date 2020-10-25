@@ -88,7 +88,7 @@ void proc_test2(int i,int j,int* ret,int s) {
 	int r;
 
 	bsize = get_bs(i, j);
-    kprintf("return %d\n",bsize);
+    // kprintf("return %d\n",bsize);
 	if (bsize != 50)
 		*ret = TFAILED;
 
@@ -138,9 +138,9 @@ void proc1_test3(int i,int* ret) {
 	int r;
 
 	get_bs(i, 100);
-	kprintf("%d %d %d\n", i, bsm_tab[i].bs_npages, bsm_tab[i].bs_status);
+	// kprintf("%d %d %d\n", i, bsm_tab[i].bs_npages, bsm_tab[i].bs_status);
 	if (xmmap(MYVPNO1, i, 100) == SYSERR) {
-		kprintf("exit here\n");
+		// kprintf("exit here\n");
 	    *ret = TFAILED;
 	    return 0;
 	}
@@ -195,27 +195,30 @@ void proc1_test4(int* ret) {
 	get_bs(MYBS1, 100);
 
 	if (xmmap(MYVPNO1, MYBS1, 100) == SYSERR) {
-		kprintf("xmmap call failed\n");
+
+		kprintf("first xmmap call failed\n");
 		*ret = TFAILED;
 		sleep(3);
 		return;
 	}
-
+	// kprintf("in first\n");
 	addr = (char*) MYVADDR1;
 	for (i = 0; i < 26; i++) {
 		*(addr + i * NBPG) = 'A' + i;
+		// kprintf("0x%08x: %c\n", addr + i * NBPG, *(addr + i * NBPG));
 	}
 
 	sleep(6);
-
+	// kprintf("in first\n");
 	/*Shoud see what proc 2 updated*/
 	for (i = 0; i < 26; i++) {
+		// kprintf("hey\n");
 		/*expected output is abcde.....*/
 		if (*(addr + i * NBPG) != 'a'+i){
 			*ret = TFAILED;
-			break;
+			// break;
 		}
-		//kprintf("0x%08x: %c\n", addr + i * NBPG, *(addr + i * NBPG));
+		// kprintf("0x%08x: %c\n", addr + i * NBPG, *(addr + i * NBPG));
 	}
 
 
@@ -227,7 +230,7 @@ void proc1_test4(int* ret) {
 void proc2_test4(int *ret) {
 	char *addr;
 	int i;
-
+	// kprintf("in proc 2\n");
 	get_bs(MYBS1, 100);
 
 	if (xmmap(MYVPNO2, MYBS1, 100) == SYSERR) {
@@ -236,22 +239,29 @@ void proc2_test4(int *ret) {
 		sleep(3);
 		return;
 	}
-
+	
 	addr = (char*) MYVADDR2;
-
+	// kprintf("in second\n");
 	/*Shoud see what proc 1 updated*/
 	for (i = 0; i < 26; i++) {
 		/*expected output is ABCDEF.....*/
+		// kprintf("in proc 2\n");	
 		if (*(addr + i * NBPG) != 'A'+i){
+	
+			
 			*ret = TFAILED;
 			break;
 		}
-		//kprintf("0x%08x: %c\n", addr + i * NBPG, *(addr + i * NBPG));
+		
+		// kprintf("0x%08x: %c\n", addr + i * NBPG, *(addr + i * NBPG));
 	}
 
 	/*Update the content, proc1 should see it*/
+	// kprintf("in second\n");
 	for (i = 0; i < 26; i++) {
 		*(addr + i * NBPG) = 'a' + i;
+		
+		// kprintf("0x%08x: %c\n", addr + i * NBPG, *(addr + i * NBPG));
 	}
 
 	xmunmap(MYVPNO2);

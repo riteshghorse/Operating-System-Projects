@@ -25,7 +25,6 @@ SYSCALL init_global_pagetables (int pid)
 			init_pte (pte);
 			pte->pt_pres = 1;
 			pte->pt_write = 1;
-//			pte->pt_global = 1;
 			pte->pt_base = j + (i * FRAME0);
 			frm_tab[phyframe].fr_refcnt += 1;
 		} 	
@@ -74,38 +73,38 @@ return(OK);
 void init_pte (pt_t *pte)
 {
 	pte->pt_pres = 0;
-        pte->pt_write = 1;
-        pte->pt_user = 0;
-        pte->pt_pwt = 0;
-        pte->pt_pcd = 0;
-        pte->pt_acc = 0;
-        pte->pt_dirty = 0;
-        pte->pt_mbz = 0;        
-        pte->pt_global = 0;
-        pte->pt_avail = 0;
-        pte->pt_base = 0;	
+	pte->pt_write = 1;
+	pte->pt_user = 0;
+	pte->pt_pwt = 0;
+	pte->pt_pcd = 0;
+	pte->pt_acc = 0;
+	pte->pt_dirty = 0;
+	pte->pt_mbz = 0;        
+	pte->pt_global = 0;
+	pte->pt_avail = 0;
+	pte->pt_base = 0;	
 }
 
 void init_pde (pd_t *pde)
 {
-        pde->pd_pres = 0;
-        pde->pd_write = 1;
-        pde->pd_user = 0;
-        pde->pd_pwt = 0;
-        pde->pd_pcd = 0;
-        pde->pd_acc = 0;
-        pde->pd_mbz = 0;
-        pde->pd_fmb = 0;
+	pde->pd_pres = 0;
+	pde->pd_write = 1;
+	pde->pd_user = 0;
+	pde->pd_pwt = 0;
+	pde->pd_pcd = 0;
+	pde->pd_acc = 0;
+	pde->pd_mbz = 0;
+	pde->pd_fmb = 0;
 	pde->pd_global = 0;
-        pde->pd_avail = 0;
-        pde->pd_base = 0;
+	pde->pd_avail = 0;
+	pde->pd_base = 0;
 }
 
 int newpagetable (int pid)
 {
 	int i, pframe;
 	int rc, ptframe;
-	pt_t *pt;
+	pt_t *pte;
 
 	rc = get_frm (&pframe);
 	if (rc == (SYSERR))
@@ -113,12 +112,11 @@ int newpagetable (int pid)
 
 	ptframe = FRAME0 + pframe;
 	init_frame_tab (pframe);
-	frm_tab[pframe].fr_status = FRM_MAPPED;
-	frm_tab[pframe].fr_pid = pid;
-	frm_tab[pframe].fr_type = FR_PAGE;	
+	frm_map (pframe, pid, FR_PAGE);
+	
 	for (i = 0; i < 1024; ++i) {
-		pt = (pt_t*)(ptframe * NBPG + i * sizeof(pt_t));
-		init_pte (pt);			
+		pte = (pt_t*)(ptframe * NBPG + i * sizeof(pt_t));
+		init_pte (pte);			
 	}		
 	return pframe;
 }

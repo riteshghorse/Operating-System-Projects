@@ -17,12 +17,12 @@ SYSCALL init_bsm()
 	int i, j;
 	disable(ps);
 	for (i = 0; i < NBS; ++i) {
-		bsm_tab[i].bs_access		= 0;
-		bsm_tab[i].bs_status		= BSM_UNMAPPED;
+		bsm_tab[i].bs_access = 0;
+		bsm_tab[i].bs_status = BSM_UNMAPPED;
 		for (j = 0; j < NPROC; ++j) {
-			bsm_tab[i].bs_pid[j]	= BADPID;
-			bsm_tab[i].bs_vpno[j]	= 0;
-			bsm_tab[i].bs_npages	= 0;
+			bsm_tab[i].bs_pid[j] = BADPID;
+			bsm_tab[i].bs_vpno[j] = 4096;
+			bsm_tab[i].bs_npages = 0;
 		}
 		bsm_tab[i].bs_sem = 0;
 		bsm_tab[i].bs_refcnt = 0;
@@ -43,16 +43,18 @@ SYSCALL get_bsm(int* avail)
 	disable(ps);
 	
 	for (i = 0; i < NBS; ++i) {
-		if (bsm_tab[i].bs_status == BSM_UNMAPPED ) {
+		if (bsm_tab[i].bs_status == BSM_UNMAPPED) {
 			/* backing store found */
 			*avail = i;
 			break;
 		}
 	}
 	restore(ps);
-	if (i >= NBS)	/* no backing store found */
+	if (i >= NBS) {	/* no backing store found */
+		restore (ps);
 		return(SYSERR);
-
+	}
+	restore (ps);
 	return(OK);
 }
 
@@ -66,7 +68,10 @@ SYSCALL free_bsm(int i)
 	STATWORD ps;
 	int p;
 	disable(ps);
-	
+	if (i < 0 || i >= NBS) {
+		restore (ps);
+		return(OK);
+	}
 	bsm_tab[i].bs_access = 0;
 	bsm_tab[i].bs_status = BSM_UNMAPPED;
 	for (p = 0; p < NPROC; ++p) {
@@ -85,22 +90,30 @@ SYSCALL free_bsm(int i)
  * bsm_lookup - lookup bsm_tab and find the corresponding entry
  *-------------------------------------------------------------------------
  */
-SYSCALL bsm_lookup(int pid, long vaddr, int* store, int* pageth)
+SYSCALL bsm_lookup(int pid, unsigned long vaddr, int* store, int* pageth)
 {
 	STATWORD ps;
-	int i, vpno = vaddr / NBPG;
+	int i;
+	// printf("vpno: %d\n", (unsigned long) vaddr);
+	long vpno;;
 	disable (ps);
-
+	vpno = vaddr / NBPG;
+	// if (vpno < 1)
+	// 	vpno *= (-1);
 	for (i = 0; i < NBS; ++i) {
-	//	if (bsm_tab[i].bs_status == BSM_MAPPED) {
-			if (bsm_tab[i].bs_pid[pid]==pid && bsm_tab[i].bs_vpno[pid]<= vpno) {
-				// kprintf("in if lookup\n");
+		if (bsm_tab[i].bs_status == BSM_MAPPED) {
+			if (bsm_tab[i].bs_pid[pid] == pid ) {
+				// printf("vpno: %u\n", (unsigned long) vaddr);
+				// kprintf("%d : %d\n",bsm_tab[i].bs_vpno[pid], vpno);
+				if (bsm_tab[i].bs_vpno[pid] <= vpno) {
+				
 				*store = i;
 				*pageth = vpno - bsm_tab[i].bs_vpno[pid];
 				restore (ps);
 				return(OK); 
+				}
 			}
-	//	}
+		}
 	}
 	restore (ps);
 	return(SYSERR);
@@ -144,6 +157,8 @@ SYSCALL bsm_unmap(int pid, int vpno, int flag)
 
 	STATWORD ps;
 	int rc, store, pageth;
+	int j;
+	int tstore, tpage;
 	long vaddr;
 	disable(ps);
 	vaddr = vpno * NBPG;
@@ -152,6 +167,16 @@ SYSCALL bsm_unmap(int pid, int vpno, int flag)
 		restore (ps);
 		return(SYSERR);
 	}
+	for (j = 0; j < NFRAMES; ++j) {
+		if(frm_tab[j].fr_pid==pid ) {
+			if(frm_tab[j].fr_type==FR_PAGE && bsm_lookup(pid,frm_tab[j].fr_vpno*NBPG,&tstore,&tpage)==OK){
+				// kprintf("writing\n");
+				if(tstore == store)
+					write_bs((j+FRAME0)*NBPG,store,tpage); 
+			}
+		}
+	}
+	// write_bs((j+FRAME0)*NBPG,store,page);
 	bsm_tab[store].bs_pid[pid] = BADPID;
 	bsm_tab[store].bs_vpno[pid] = 4096;
 	bsm_tab[store].bs_refcnt -= 1;

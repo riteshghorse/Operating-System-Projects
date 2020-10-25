@@ -69,3 +69,12 @@ void init_frame_tab (int frame_id)
 	frm_tab[frame_id].fr_type = FR_TBL;
 	frm_tab[frame_id].fr_dirty = FR_CLEAN;
 }
+
+
+void frm_map (int pframe, int pid, int type)
+{
+	frm_tab[pframe].fr_status = FRM_MAPPED;
+	frm_tab[pframe].fr_pid = pid;
+	frm_tab[pframe].fr_type = type;	
+	frm_tab[pframe].fr_refcnt += 1;
+}

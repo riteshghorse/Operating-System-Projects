@@ -105,3 +105,4 @@ SYSCALL write_bs(char *, bsd_t, int);
 #define MAX_PDE		1024
 #define MAX_PTE		1024
 
+#define ispresent(x) (x==1? 1 : 0)

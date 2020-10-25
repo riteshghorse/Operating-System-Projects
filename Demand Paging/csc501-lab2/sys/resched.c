@@ -85,22 +85,24 @@ int	resched()
 #endif
 int j;
 	/* update pages to disk in case of dirty pages*/
-	for (j = 4; j < NFRAMES; ++j) {
+	for (j = 0; j < NFRAMES; ++j) {
 		int store,page;
 		if(frm_tab[j].fr_pid==oldpid ) {
 			if(frm_tab[j].fr_type==FR_PAGE && bsm_lookup(oldpid,frm_tab[j].fr_vpno*NBPG,&store,&page)==OK){
-				kprintf("writing\n");
+				// kprintf("writing\n");
 				write_bs((j+FRAME0)*NBPG,store,page); }
 			}
 		
 		if(frm_tab[j].fr_pid==currpid){
 			if(frm_tab[j].fr_type==FR_PAGE && bsm_lookup(currpid,frm_tab[j].fr_vpno*NBPG,&store,&page)==OK){
-				kprintf("reading\n");
+				// kprintf("reading\n");
 				read_bs((j+FRAME0)*NBPG,store,page);
 			}
 		}
 	}
 	write_cr3 (nptr->pdbr);	 	/* change pdbr, flush tlb */
+	// kprintf("%d ", oldpid);
+	// kprintf("%d\n", currpid);
 	ctxsw(&optr->pesp, optr->pirmask, &nptr->pesp, nptr->pirmask);
 
 #ifdef	DEBUG
