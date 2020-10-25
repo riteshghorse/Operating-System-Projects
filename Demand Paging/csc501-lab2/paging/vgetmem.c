@@ -24,19 +24,19 @@ WORD	*vgetmem(nbytes)
 		return( (WORD*)SYSERR);
 	}
 	nbytes = (unsigned int) roundmb(nbytes);
-	for (q = &(pptr->vmemlist), p = (pptr->vmemlist->mnext);
+	for (q = (pptr->vmemlist), p = (pptr->vmemlist->mnext);
 		p != (struct mblock *)NULL;
 		q = p, p = p->mnext) {
 
-		if (q->mlen == nbytes) {
-			q->mnext = (struct mblock*)((unsigned)p + nbytes);
-			q->mlen = 0;
+		if (p->mlen == nbytes) {
+			q->mnext = p->mnext;
 			restore (ps);
 			return( (WORD *)p);
 		} else if (p->mlen > nbytes) {
 			leftover = (struct mblock *)( (unsigned)p + nbytes);
 			q->mnext = leftover;
-			q->mlen = q->mlen - nbytes;
+			leftover->mnext = p->mnext;
+			leftover->mlen = p->mlen - nbytes;
 			restore (ps);
 			return( (WORD*)p);
 		}
@@ -44,5 +44,3 @@ WORD	*vgetmem(nbytes)
 	restore (ps);
 	return( SYSERR );
 }
-
-

@@ -378,29 +378,34 @@ void proc1_test6(int *ret) {
 		vaddr = (char *) tempaddr;
 		vpno = tempaddr >> 12;
 		get_bs(i, 127);
+	//	kprintf("%d %d\n", i, bsm_tab[i].bs_npages);
 		if (xmmap(vpno, i, 127) == SYSERR) {
 			*ret = TFAILED;
 			kprintf("xmmap call failed\n");
 			sleep(3);
 			return;
 		}
-
+	//	kprintf("%d %d\n", i, bsm_tab[i].bs_npages);
 		for (j = 0; j < 127; j++) {
+	//		kprintf("%d %d\n", i, j);
 			*(vaddr + j * NBPG) = 'A' + i;
 		}
-
+	//	kprintf("%d\n", i);
 		for (j = 0; j < 127; j++) {
 			if (*(vaddr + j * NBPG) != 'A'+i){
 				*ret = TFAILED;
 				break;
 			}
-			//kprintf("0x%08x:%c ", vaddr + j * NBPG, *(vaddr + j * NBPG));
+			// kprintf("0x%08x:%c\n", vaddr + j * NBPG, *(vaddr + j * NBPG));
 		}
-		xmunmap(vpno);
-		release_bs(i);
+		
+		xmunmap (vpno);
+		// kprintf("done\n");
+		release_bs (i);
+	//	kprintf("done %d\n", i);
 	}
 
-
+	//kprintf("return\n");
 	return;
 }
 
@@ -624,41 +629,46 @@ int main() {
 
 	kprintf("\n\nHello World, Xinu lives\n\n");
 
-    // kprintf("Please Input:\n");
+    kprintf("Please Input:\n");
 	// while ((i = read(CONSOLE, buf, sizeof(buf))) < 1)
 	// 	;
 	// buf[i] = 0;
 	// s = atoi(buf);
     // kprintf("Get %d\n", s);
 
-    // switch(s) {
-        // case 1:
-    	   test1();
-        //    break;
-        // case 2:
-    	   test2();
-        //    break;
-        // case 3:
-    	   test3();
-        //    break;
-        // case 4:
-    	   test4();
-        //    break;
-        // case 5:
-    	   test5();
-        //    break;
-        // case 6:
-    	   test6();
-        //    break;
-        // case 7:
-           test7();
-        //    break;
-        // case 8:
-           test8();
-        //    break;
-        // default:
-        //    kprintf("No test selected\n");
+    // switch(6) {
+    //     case 1:
+    	//    test1();
+    //        break;
+    //     case 2:
+    // 	   test2();
+    //        break;
+    //     case 3:
+    // 	   test3();
+    //        break;
+    //     case 4:
+    // 	   test4();
+    //        break;
+    //     case 5:
+    // 	   test5();
+    //        break;
+    //     case 6:
+    // 	   test6();
+    //        break;
+    //     case 7:
+    //        test7();
+    //        break;
+    //     case 8:
+    //        test8();
+    //        break;
+    //     default:
+    //        kprintf("No test selected\n");
     // }
-
+	test1();
+	 test2();
+	 test3();
+	 test4();
+	 test5();
+	test6();
     shutdown();
 }

@@ -54,9 +54,14 @@ SYSCALL get_frm(int* avail)
  * free_frm - free a frame 
  *-------------------------------------------------------------------------
  */
-SYSCALL free_frm(int i)
+SYSCALL free_frm(int frame_id)
 {
-	
+	frm_tab[frame_id].fr_status = FRM_UNMAPPED;
+        frm_tab[frame_id].fr_pid = BADPID;
+        frm_tab[frame_id].fr_vpno = 4096;
+        frm_tab[frame_id].fr_refcnt = 0;
+        frm_tab[frame_id].fr_type = FR_TBL;
+        frm_tab[frame_id].fr_dirty = FR_CLEAN;	
 	return OK;
 }
 

@@ -4,6 +4,7 @@
 #include <kernel.h>
 #include <mem.h>
 #include <proc.h>
+#include <paging.h>
 
 extern struct pentry proctab[];
 /*------------------------------------------------------------------------
@@ -21,21 +22,22 @@ SYSCALL	vfreemem(block, size)
 	
 	disable (ps);
 	pptr = &proctab[currpid];
-	if (size == 0 || (unsigned)block > (unsigned)(pptr->vmemlist->mlen)) {
+	if (size == 0 || size > (256 * NBPG) || (unsigned)block < (unsigned)(4096 * NBPG)
+	 	|| (unsigned)block > (unsigned)(pptr->vhpno + pptr->vhpnpages)*NBPG) {
 		restore (ps);
 		return(SYSERR);
 	}
 	size = (unsigned int)roundmb(size);
-	for (p = pptr->vmemlist->mnext, q = &(pptr->vmemlist);
+	for (p = pptr->vmemlist->mnext, q = (pptr->vmemlist);
 		p != (struct mblock *)NULL && p<block;
-		q = p, p = p->mnext){
+		q = p, p = p->mnext);
 
 	if (((top=q->mlen+(unsigned)q)>(unsigned)block && q!= &(pptr->vmemlist)) ||
             (p!=NULL && (size+(unsigned)block) > (unsigned)p)) {
                 restore(ps);
                 return(SYSERR);
         }
-        if (q != &(pptr->vmemlist) && (q->mlen + (unsigned)q) == (unsigned)block)
+        if (q != &(pptr->vmemlist) && top == (unsigned)block)
                         q->mlen += size;
         else {
                 block->mlen = size;
@@ -47,7 +49,6 @@ SYSCALL	vfreemem(block, size)
                 q->mlen += p->mlen;
                 q->mnext = p->mnext;
         }
-	}
 	restore (ps);
 	return(OK);
 }

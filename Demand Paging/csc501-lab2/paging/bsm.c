@@ -152,8 +152,8 @@ SYSCALL bsm_unmap(int pid, int vpno, int flag)
 
 	if (isbadpid(pid))
 		return(SYSERR);
-	if (vpno < 4096) 
-		return(SYSERR);
+	// if (vpno < 4096) 
+	// 	return(SYSERR);
 
 	STATWORD ps;
 	int rc, store, pageth;
@@ -173,6 +173,7 @@ SYSCALL bsm_unmap(int pid, int vpno, int flag)
 				// kprintf("writing\n");
 				if(tstore == store)
 					write_bs((j+FRAME0)*NBPG,store,tpage); 
+				free_frm (j);
 			}
 		}
 	}
