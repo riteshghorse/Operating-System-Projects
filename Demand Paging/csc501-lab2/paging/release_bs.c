@@ -21,9 +21,9 @@ SYSCALL release_bs(bsd_t bs_id) {
 		restore (ps);
 		return(SYSERR);
 	}
-	if (bsm_tab[bs_id].bs_access == 1 && bsm_tab[bs_id].bs_pid[currpid] == currpid)
+	if (bsm_tab[bs_id].bs_access == 1 && bsm_tab[bs_id].bs_pid[currpid] == currpid) {
 		free_bsm(bs_id);
-	else if (bsm_tab[bs_id].bs_pid[currpid] == currpid && bsm_tab[bs_id].bs_refcnt <= 1) {
+	} else if (bsm_tab[bs_id].bs_pid[currpid] == currpid && bsm_tab[bs_id].bs_refcnt <= 1) {
 		free_bsm (bs_id);
 	} else if (bsm_tab[bs_id].bs_refcnt > 1) {
 		restore (ps);

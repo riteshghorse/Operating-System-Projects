@@ -5,7 +5,7 @@
 
 unsigned long reg;
 
-SYSCALL init_global_pagetables (int pid)
+SYSCALL init_global_pagetables(int pid)
 {
 	int i, j, phyframe, rc;
 	int frame_base;
@@ -33,7 +33,7 @@ SYSCALL init_global_pagetables (int pid)
 }
 
 
-SYSCALL init_page_directory (int pid)
+SYSCALL init_page_directory(int pid)
 {
 	// kprintf("%d\n", pid);
 /*	if(pid != 0)
@@ -46,9 +46,9 @@ SYSCALL init_page_directory (int pid)
 //		kprintf("free frame not found\n");
 		sleep(10);
 		return(SYSERR);
-        }
+	}
 
-//	init_frame_tab ();
+	//	init_frame_tab ();
 	frm_tab[phyframe].fr_status = FRM_MAPPED;
 	frm_tab[phyframe].fr_pid = pid;
 	frm_tab[phyframe].fr_type = FR_DIR;
@@ -66,11 +66,11 @@ SYSCALL init_page_directory (int pid)
 	}		
 //	kprintf("free frame found\n");	
 //	sleep(10);
-return(OK);
+	return(OK);
 }
 
 
-void init_pte (pt_t *pte)
+void init_pte(pt_t *pte)
 {
 	pte->pt_pres = 0;
 	pte->pt_write = 1;
@@ -85,7 +85,7 @@ void init_pte (pt_t *pte)
 	pte->pt_base = 0;	
 }
 
-void init_pde (pd_t *pde)
+void init_pde(pd_t *pde)
 {
 	pde->pd_pres = 0;
 	pde->pd_write = 1;
@@ -100,7 +100,7 @@ void init_pde (pd_t *pde)
 	pde->pd_base = 0;
 }
 
-int newpagetable (int pid)
+int newpagetable(int pid)
 {
 	int i, pframe;
 	int rc, ptframe;
@@ -120,5 +120,3 @@ int newpagetable (int pid)
 	}		
 	return pframe;
 }
-
-

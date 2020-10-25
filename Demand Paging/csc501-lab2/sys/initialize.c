@@ -231,13 +231,11 @@ paginginit ()
 //	kprintf("done map\n");
 	init_global_pagetables (NULLPROC);	/* page table for 16M    	*/
 	init_page_directory (NULLPROC);	/* initialize page directory	*/
-	set_evec (14, (u_long)pfintr); 
+	set_evec (14, (unsigned long)pfintr); 
 	write_cr3 (proctab[NULLPROC].pdbr); /* set PDBR for null proc   	*/
 //	kprintf("set pdbr\n");
 	enable_paging ();			/* enable paging 		*/
 //	kprintf("enabled paging\n");
-//	set_evec (14, (u_long)pfintr);	          /* page fault isr 		  */
-//	kprintf("done page init\n");
 	return(OK);
 }
 

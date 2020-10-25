@@ -18,7 +18,7 @@ SYSCALL pfint()
 	int store, pageth;
 	unsigned long fa_addr;
 	
-	disable (ps);
+	disable(ps);
 
 	fa_addr = read_cr2 ();
 	virt_addr_t *addr = (virt_addr_t*)&fa_addr;
@@ -55,10 +55,10 @@ SYSCALL pfint()
 		pte->pt_base = ptframe + FRAME0;
 	} else {
 		ptframe = pte->pt_base - FRAME0;
-		frm_tab[ptframe].fr_refcnt += 1;
+		// frm_tab[ptframe].fr_refcnt += 1;
 	}
 	
-
+	pte->pt_acc = 1;
 	// kprintf("getting frm\n");
 	
 	// init_frame_tab (ptframe);
@@ -66,10 +66,10 @@ SYSCALL pfint()
 	frm_tab[ptframe].fr_pid = currpid;
 	frm_tab[ptframe].fr_vpno = fa_addr/NBPG;
 	frm_tab[ptframe].fr_type = FR_PAGE;
-	
+	frm_tab[ptframe].fr_refcnt += 1;
 	
 	read_bs ((char*)((ptframe + FRAME0) * NBPG), store, pageth);
-	pte->pt_acc = 1;
+	
 	// kprintf(" %u\n", pt->pt_base);
 	/* flush tlb */
 	write_cr3 (proctab[currpid].pdbr);

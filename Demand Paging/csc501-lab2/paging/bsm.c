@@ -7,6 +7,7 @@
 
 
 bs_map_t bsm_tab[NBS];
+
 /*-------------------------------------------------------------------------
  * init_bsm- initialize bsm_tab
  *-------------------------------------------------------------------------
@@ -22,8 +23,8 @@ SYSCALL init_bsm()
 		for (j = 0; j < NPROC; ++j) {
 			bsm_tab[i].bs_pid[j] = BADPID;
 			bsm_tab[i].bs_vpno[j] = 4096;
-			bsm_tab[i].bs_npages = 0;
 		}
+		bsm_tab[i].bs_npages = 0;
 		bsm_tab[i].bs_sem = 0;
 		bsm_tab[i].bs_refcnt = 0;
 	}
@@ -43,19 +44,18 @@ SYSCALL get_bsm(int* avail)
 	disable(ps);
 	
 	for (i = 0; i < NBS; ++i) {
-		if (bsm_tab[i].bs_status == BSM_UNMAPPED) {
-			/* backing store found */
+		if (bsm_tab[i].bs_status == BSM_UNMAPPED) {		/* backing store found */
 			*avail = i;
 			break;
 		}
 	}
-	restore(ps);
 	if (i >= NBS) {	/* no backing store found */
 		restore (ps);
 		return(SYSERR);
+	} else {	
+		restore (ps);
+		return(OK);
 	}
-	restore (ps);
-	return(OK);
 }
 
 
@@ -68,10 +68,12 @@ SYSCALL free_bsm(int i)
 	STATWORD ps;
 	int p;
 	disable(ps);
+
 	if (i < 0 || i >= NBS) {
 		restore (ps);
 		return(OK);
 	}
+	
 	bsm_tab[i].bs_access = 0;
 	bsm_tab[i].bs_status = BSM_UNMAPPED;
 	for (p = 0; p < NPROC; ++p) {
@@ -106,11 +108,10 @@ SYSCALL bsm_lookup(int pid, unsigned long vaddr, int* store, int* pageth)
 				// printf("vpno: %u\n", (unsigned long) vaddr);
 				// kprintf("%d : %d\n",bsm_tab[i].bs_vpno[pid], vpno);
 				if (bsm_tab[i].bs_vpno[pid] <= vpno) {
-				
-				*store = i;
-				*pageth = vpno - bsm_tab[i].bs_vpno[pid];
-				restore (ps);
-				return(OK); 
+					*store = i;
+					*pageth = vpno - bsm_tab[i].bs_vpno[pid];
+					restore (ps);
+					return(OK); 
 				}
 			}
 		}
@@ -128,6 +129,10 @@ SYSCALL bsm_map(int pid, int vpno, int source, int npages)
 {
 	if (npages <= 0 || npages > 256)
 		return(SYSERR);
+
+	if (source < 0 || source >= NBS)
+		return(SYSERR);
+
 
 	STATWORD ps;
 	disable(ps);
@@ -149,9 +154,6 @@ SYSCALL bsm_map(int pid, int vpno, int source, int npages)
  */
 SYSCALL bsm_unmap(int pid, int vpno, int flag)
 {
-
-	if (isbadpid(pid))
-		return(SYSERR);
 	// if (vpno < 4096) 
 	// 	return(SYSERR);
 
@@ -167,13 +169,17 @@ SYSCALL bsm_unmap(int pid, int vpno, int flag)
 		restore (ps);
 		return(SYSERR);
 	}
+
 	for (j = 0; j < NFRAMES; ++j) {
-		if(frm_tab[j].fr_pid==pid ) {
-			if(frm_tab[j].fr_type==FR_PAGE && bsm_lookup(pid,frm_tab[j].fr_vpno*NBPG,&tstore,&tpage)==OK){
+		if (frm_tab[j].fr_pid==pid) {
+			if (frm_tab[j].fr_type==FR_PAGE) {
+				if (bsm_lookup(pid,frm_tab[j].fr_vpno*NBPG,&tstore,&tpage) != (SYSERR)){
 				// kprintf("writing\n");
-				if(tstore == store)
-					write_bs((j+FRAME0)*NBPG,store,tpage); 
-				free_frm (j);
+					if(tstore == store){
+						write_bs((j+FRAME0)*NBPG,store,tpage); 
+						free_frm (j);
+					}
+				}
 			}
 		}
 	}
@@ -186,5 +192,3 @@ SYSCALL bsm_unmap(int pid, int vpno, int flag)
 	restore(ps);
 	return(OK);
 }
-
-

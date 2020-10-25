@@ -65,7 +65,7 @@ extern bs_map_t bsm_tab[];
 extern fr_map_t frm_tab[];
 
 /* ds for paging */
-extern pt_t globalpt[];
+// extern pt_t globalpt[];
 
 /* Prototypes for required API calls */
 SYSCALL xmmap(int, bsd_t, int);
@@ -78,12 +78,12 @@ SYSCALL release_bs(bsd_t);
 SYSCALL read_bs(char *, bsd_t, int);
 SYSCALL write_bs(char *, bsd_t, int);
 
-#define NBPG		4096	/* number of bytes per page	*/
+#define NBPG	  	4096	/* number of bytes per page	*/
 #define FRAME0		1024	/* zero-th frame		*/
 #define NFRAMES 	1024	/* number of frames		*/
 
 #define BSM_UNMAPPED	0
-#define BSM_MAPPED	1
+#define BSM_MAPPED  	1
 
 #define FRM_UNMAPPED	0
 #define FRM_MAPPED	1
@@ -101,8 +101,11 @@ SYSCALL write_bs(char *, bsd_t, int);
 #define BACKING_STORE_BASE	0x00800000
 #define BACKING_STORE_UNIT_SIZE 0x00100000
 
-#define NBS 		8
+
+#define NBS 8                         /* number of backing stores */
+
+/* max entries in a page */
 #define MAX_PDE		1024
 #define MAX_PTE		1024
 
-#define ispresent(x) (x==1? 1 : 0)
+#define ispresent(x) (x==1? 1 : 0)    /* is present check for PDE and PTE */

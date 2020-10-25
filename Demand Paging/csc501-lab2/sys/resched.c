@@ -23,6 +23,7 @@ int	resched()
 	register struct	pentry	*nptr;	/* pointer to new process entry */
 	register int i;
 	int oldpid;
+	int rc, j, bs_id, pageth;
 	disable(PS);
 	/* no switch needed if current process priority higher than next*/
 	oldpid = currpid;
@@ -83,20 +84,21 @@ int	resched()
 #ifdef	DEBUG
 	PrintSaved(nptr);
 #endif
-int j;
 	/* update pages to disk in case of dirty pages*/
 	for (j = 0; j < NFRAMES; ++j) {
-		int store,page;
-		if(frm_tab[j].fr_pid==oldpid ) {
-			if(frm_tab[j].fr_type==FR_PAGE && bsm_lookup(oldpid,frm_tab[j].fr_vpno*NBPG,&store,&page)==OK){
-				// kprintf("writing\n");
-				write_bs((j+FRAME0)*NBPG,store,page); }
+		if (frm_tab[j].fr_pid == oldpid) {
+			if (frm_tab[j].fr_type==FR_PAGE) {
+				rc =  bsm_lookup(oldpid, (frm_tab[j].fr_vpno)*NBPG, &bs_id, &pageth);
+				if (rc != (SYSERR))
+					write_bs((j+FRAME0)*NBPG, bs_id, pageth); 
 			}
+		}
 		
-		if(frm_tab[j].fr_pid==currpid){
-			if(frm_tab[j].fr_type==FR_PAGE && bsm_lookup(currpid,frm_tab[j].fr_vpno*NBPG,&store,&page)==OK){
-				// kprintf("reading\n");
-				read_bs((j+FRAME0)*NBPG,store,page);
+		if (frm_tab[j].fr_pid==currpid){
+			if(frm_tab[j].fr_type==FR_PAGE){
+				rc = bsm_lookup(currpid, (frm_tab[j].fr_vpno)*NBPG, &bs_id, &pageth);
+				if (rc != (SYSERR))
+					read_bs((j+FRAME0)*NBPG, bs_id, pageth);
 			}
 		}
 	}

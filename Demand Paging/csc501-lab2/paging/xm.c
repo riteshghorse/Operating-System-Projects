@@ -18,7 +18,7 @@ SYSCALL xmmap(int virtpage, bsd_t source, int npages)
 	disable(ps);
 	
 	/* if invalid backing store */
-	if (source < 0 || source >= 8 || npages <= 0 || npages > 256) {
+	if (source < 0 || source >= NBS || npages <= 0 || npages > 256) {
 		restore(ps);
 		return(SYSERR);
 	}
