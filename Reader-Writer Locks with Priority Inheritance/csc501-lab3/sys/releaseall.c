@@ -11,7 +11,7 @@ void get_lock(int ldes1)
     int newproc, newprio;
     lptr = &ltable[ldes1];
 
-    if (isbadpid(q[lptr->lqtail].qprev) EMPTY) {
+    if (isbadpid(q[lptr->lqtail].qprev)) {
         kprintf("empty queue\n");
         lptr->ltype = LFREE;
         lptr->lstate = LFREE;
