@@ -8,6 +8,7 @@
 #include <mem.h>
 #include <io.h>
 #include <stdio.h>
+#include <lock.h>
 
 LOCAL int newpid();
 
@@ -28,7 +29,7 @@ SYSCALL create(procaddr,ssize,priority,name,nargs,args)
 	STATWORD 	ps;    
 	int		pid;		/* stores new process id	*/
 	struct	pentry	*pptr;		/* pointer to proc. table entry */
-	int		i;
+	int		i, j;
 	unsigned long	*a;		/* points to list of args	*/
 	unsigned long	*saddr;		/* stack address		*/
 	int		INITRET();
@@ -95,6 +96,11 @@ SYSCALL create(procaddr,ssize,priority,name,nargs,args)
 	*--saddr = 0;		/* %esi */
 	*--saddr = 0;		/* %edi */
 	*pushsp = pptr->pesp = (unsigned long)saddr;
+
+	pptr->lwaitret = SYSERR;
+	for (j = 0; j < NLOCKS; ++j) {
+		pptr->plock[j] = -1;
+	}
 
 	restore(ps);
 	return(pid);

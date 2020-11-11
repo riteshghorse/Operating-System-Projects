@@ -13,6 +13,7 @@
 #include <q.h>
 #include <io.h>
 #include <stdio.h>
+#include <lock.h>
 
 /*#define DETAIL */
 #define HOLESIZE	(600)	
@@ -76,7 +77,7 @@ int nulluser()				/* babysit CPU when no one home */
 	initevec();
 	
 	sysinit();
-
+	linit();
 	sprintf(vers, "Xinu Version %s", VERSION);
 	kprintf("\n\n%s\n", vers);
 	if (reboot++ < 1)
@@ -178,7 +179,7 @@ LOCAL int sysinit()
 	}
 
 	rdytail = 1 + (rdyhead=newqueue());/* initialize ready list */
-
+	
 #ifdef	MEMMARK
 	_mkinit();			/* initialize memory marking */
 #endif
