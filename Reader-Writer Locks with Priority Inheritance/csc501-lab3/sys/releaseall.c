@@ -5,6 +5,21 @@
 #include <lock.h>
 #include <stdio.h>
 
+int scanwaittime(int procid, int priority, int waittime, int ldes) 
+{
+    if (ltable[ldes].lqtype[procid] == WRITE) {
+        return procid;
+    }
+    while(!isbadpid(q[procid].qprev) && q[q[procid].qprev].qkey == priority) {
+        if (ltable[ldes].lqtype[q[procid].qprev] == WRITE &&
+            (proctab[q[procid].qprev].lqwaittime - waittime) < 1) {
+                return (q[procid].qprev);
+        }
+        procid = q[procid].qprev;
+    }
+    return procid;
+}
+
 void get_lock(int ldes1) 
 {
     struct lentry *lptr;
@@ -21,6 +36,7 @@ void get_lock(int ldes1)
         newprio = q[newproc].qkey;
         kprintf("release -> %d : %d\n", newproc, newprio);
         /*include check for time when many write requests*/
+        newproc = scanwaittime(newproc, newprio, proctab[newproc].lqwaittime, ldes1);
         newproc = dequeue(newproc);
         ready(newproc, RESCHNO);
         lptr->ltype = lptr->lqtype[newproc];

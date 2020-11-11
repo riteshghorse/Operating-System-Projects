@@ -61,7 +61,8 @@ struct	pentry	{
 	int	ppagedev;		/* pageing dgram device		*/
 	int	pwaitret;
 	int 	lwaitret;
-	int 	plock[50];		/* locks for which current proc is waiting*/
+	int 	plock[50];		/* locks which current proc has acquired */
+	int 	lqwaittime;
 };
 
 

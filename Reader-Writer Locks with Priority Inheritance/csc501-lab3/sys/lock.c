@@ -6,6 +6,8 @@
 #include <lock.h>
 #include <stdio.h>
 
+
+extern int ctr1000;
 /**
 * returns true if no waiting process 
 * has priority greater than current proc
@@ -55,17 +57,20 @@ int lock(int ldes1, int type, int priority)
         lptr->lockcnt = 1;
         lptr->ltype = type;
         lptr->lprio = priority;
+        pptr->plock[ldes1] = type;
         pptr->lwaitret = (OK);
         restore(ps);
         return(OK);
     }
+
     /* if currently a write lock then just add to queue */
     if (lptr->ltype == WRITE) {
         kprintf("Write lock exists\n");
         pptr->pstate = PRWAIT;
-        pptr->plock[ldes1] = ldes1;
+        // pptr->plock[ldes1] = ldes1;
         lptr->lqwait[currpid] = currpid;
         lptr->lqtype[currpid] = type;
+        pptr->lqwaittime = ctr1000;
         insert (currpid, lptr->lqhead, priority);
         pptr->lwaitret = DELETED;
         resched();
@@ -78,9 +83,10 @@ int lock(int ldes1, int type, int priority)
         if (type == WRITE) {
             kprintf("Read lock exists\n");
             pptr->pstate = PRWAIT;
-            pptr->plock[ldes1] = ldes1;
+            // pptr->plock[ldes1] = ldes1;
             lptr->lqwait[currpid] = currpid;
             lptr->lqtype[currpid] = type;
+            pptr->lqwaittime = ctr1000;
             insert (currpid, lptr->lqhead, priority);
             pptr->lwaitret = DELETED;
             resched();
@@ -91,6 +97,7 @@ int lock(int ldes1, int type, int priority)
             if (allowread(ldes1, priority)) {
                 kprintf("Allowing read...\n");
                 lptr->lockcnt += 1;
+                proctab[currpid].plock[ldes1] = READ;
                 proctab[currpid].lwaitret = (OK);
                 // proctab[currpid].plock[ldes1] = 1;
                 restore (ps);
@@ -98,9 +105,10 @@ int lock(int ldes1, int type, int priority)
             } else {
                 kprintf("Can't allow read\n");
                 pptr->pstate = PRWAIT;
-                pptr->plock[ldes1] = ldes1;
+                // pptr->plock[ldes1] = ldes1;
                 lptr->lqwait[currpid] = currpid;
                 lptr->lqtype[currpid] = type;
+                pptr->lqwaittime = ctr1000;
                 insert (currpid, lptr->lqhead, priority);
                 pptr->lwaitret = DELETED;
                 resched();
