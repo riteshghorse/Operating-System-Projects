@@ -365,7 +365,7 @@ blkequ.o: ../sys/blkequ.c /usr/include/stdc-predef.h ../h/kernel.h \
  ../h/systypes.h ../h/conf.h ../h/mem.h
 chprio.o: ../sys/chprio.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/proc.h ../h/q.h \
- ../h/stdio.h
+ ../h/stdio.h ../h/lock.h
 clkinit.o: ../sys/clkinit.c /usr/include/stdc-predef.h ../h/conf.h \
  ../h/kernel.h ../h/systypes.h ../h/mem.h ../h/sleep.h ../h/i386.h \
  ../h/stdio.h ../h/q.h

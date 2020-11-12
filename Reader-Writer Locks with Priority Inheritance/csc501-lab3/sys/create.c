@@ -99,9 +99,10 @@ SYSCALL create(procaddr,ssize,priority,name,nargs,args)
 
 	pptr->lwaitret = SYSERR;
 	for (j = 0; j < NLOCKS; ++j) {
-		pptr->plock[j] = -1;
+		pptr->plock[j] = LFREE;
 	}
-
+	pptr->pinh = 0;
+	pptr->lockid = -1;
 	restore(ps);
 	return(pid);
 }

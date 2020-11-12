@@ -64,6 +64,45 @@ void get_lock(int ldes1)
     }
 }
 
+void updatepriority (int ppid)
+{
+	int i, j, maxprio;
+	struct lentry *lptr;
+	maxprio = 0;
+	for (j = 0; j < NLOCKS; ++j) {
+		if (proctab[ppid].plock[j] != LFREE) {
+			lptr = &ltable[j];
+				for (i = 0; i < NPROC; ++i) {
+					if (lptr->lqwait[i] != BADPID && proctab[i].pprio > maxprio) {
+							maxprio = proctab[i].pprio;
+					}
+				}
+		}	
+	}
+	proctab[ppid].pprio = maxprio;
+}
+
+void chprio_updateprio (int ppid)
+{
+	struct lentry *lptr;
+	int i, maxprio;
+	maxprio = 0;
+	lptr = &ltable[proctab[ppid].lockid];
+	for (i = 0; i < NPROC; ++i) {
+		if (lptr->lqwait[i] != BADPID && proctab[i].pprio > maxprio) {
+			maxprio = proctab[i].pprio;
+		}
+	}
+	for (i = 0; i < NPROC; ++i) {
+		if (lptr->lqwait[i] != BADPID && proctab[i].pprio < maxprio) {
+            proctab[i].pprio = maxprio;
+        }
+		if (proctab[i].plock[proctab[ppid].lockid] != LFREE && proctab[i].pprio < maxprio) {
+			proctab[i].pprio = maxprio;
+		}
+	}	
+}
+
 
 int releaseall(int numlocks, int ldes1,...) 
 {
@@ -96,7 +135,10 @@ int releaseall(int numlocks, int ldes1,...)
             // lptr->lqtype[currpid] = LFREE;
             get_lock (currlock);
         }
-    }
+        lptr->lholdprocs[currpid] = BADPID;
+		proctab[currpid].plock[currlock] = LFREE;
+	}
+	updatepriority (currpid);
     restore (ps);
     return(res);
 }

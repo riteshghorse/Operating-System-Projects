@@ -5,7 +5,7 @@
 #include <proc.h>
 #include <q.h>
 #include <stdio.h>
-
+#include <lock.h>
 /*------------------------------------------------------------------------
  * chprio  --  change the scheduling priority of a process
  *------------------------------------------------------------------------
@@ -22,6 +22,7 @@ SYSCALL chprio(int pid, int newprio)
 		return(SYSERR);
 	}
 	pptr->pprio = newprio;
+	updatepriority (pid);	
 	restore(ps);
 	return(newprio);
 }
