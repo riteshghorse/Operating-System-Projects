@@ -45,7 +45,7 @@ int checkpriority(int ldes, int ppid, int priority)
         if (i != ppid && proctab[i].pstate != PRFREE) {
             if (proctab[i].pinh != 0)
                 pprio = proctab[i].pinh;
-            else
+            else 
                 pprio = proctab[i].pprio;
             if (proctab[i].plock[ldes] != LFREE && pprio < priority)
                 return i;   /* need to update the priority */
@@ -60,9 +60,11 @@ int checkpriority(int ldes, int ppid, int priority)
 int inheritprio(int ldes, int p2, int p1)
 {
     int npid;
+    if (proctab[p2].pinh == 0)
+        proctab[p2].pinh = proctab[p2].pprio;
     if (proctab[p1].pinh != 0)
         proctab[p2].pprio = proctab[p1].pinh;
-    else
+    else 
         proctab[p2].pprio = proctab[p1].pprio;
 
     if (proctab[p2].lockid != -1) {

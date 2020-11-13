@@ -22,7 +22,12 @@ SYSCALL chprio(int pid, int newprio)
 		return(SYSERR);
 	}
 	pptr->pprio = newprio;
-	updatepriority (pid);	
+	if (pptr->lockid != -1) {
+		updatemaxprio (pptr->lockid);
+		updateholdprio (pptr->lockid);
+	}
+	
+	// updatepriority (pid);	
 	restore(ps);
 	return(newprio);
 }

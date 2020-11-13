@@ -8,6 +8,7 @@
 #include <io.h>
 #include <q.h>
 #include <stdio.h>
+#include <lock.h>
 
 /*------------------------------------------------------------------------
  * kill  --  kill a process and remove it from the system
@@ -48,6 +49,8 @@ SYSCALL kill(int pid)
 	case PRWAIT:	semaph[pptr->psem].semcnt++;
 
 	case PRREADY:	dequeue(pid);
+			updatemaxprio (pptr->lockid);
+			updateholdprio (pptr->lockid);
 			pptr->pstate = PRFREE;
 			break;
 

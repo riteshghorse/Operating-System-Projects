@@ -173,12 +173,14 @@ void test3 ()
 	
 	kprintf("-kill reader B, then sleep 1s\n");
 	kill (rd2);
+        kprintf("wr1: %d\n", getprio(wr1));
 	sleep (1);
 	assert (getprio(wr1) == 25, "Test 3 failed");
 
 	kprintf("-kill reader A, then sleep 1s\n");
 	kill (rd1);
 	sleep(1);
+        kprintf("wr1: %d\n", getprio(wr1));
 	assert(getprio(wr1) == 20, "Test 3 failed");
 
         sleep (8);
@@ -191,7 +193,7 @@ int main( )
          * The provided results do not guarantee your correctness.
          * You need to read the PA2 instruction carefully.
          */
-	// test1();
+	test1();
 	test2();
 	test3();
         /* The hook to shutdown QEMU for process-like execution of XINU.

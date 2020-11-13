@@ -32,5 +32,9 @@ extern  int     nextlock;
 
 
 extern void linit();
-
+extern int inheritprio(int ldes, int p2, int p1);
+extern int checkpriority(int ldes, int ppid, int priority);
+extern void updateholdprio (int ldes);
+extern void updatepriority (int ppid);
+extern void updatemaxprio (int ldes);
 #endif
