@@ -23,14 +23,14 @@ int allowread(int ldes, int priority)
     curr = ldtptr->lqtail;
     while (q[curr].qprev != ldtptr->lqhead) {
             curr = q[curr].qprev;
-            if (q[curr].qkey > priority && ldtptr->lqtype[curr] == WRITE){
+            if (q[curr].qkey >= priority && ldtptr->lqtype[curr] == WRITE){
                 // kprintf("read not allowed with %d:%d\n", currpid, priority);
                 return 0;   /* read not allowed*/
             }
     }
-    if (priority <= ldtptr->lprio) {
-        return 0;
-    }
+    // if (priority < ldtptr->lprio) {
+    //     return 0;
+    // }
     return 1;   /* read allowed */
 }
 
@@ -89,7 +89,7 @@ int lock(int ldes1, int type, int priority)
     disable(ps);
     pptr = &proctab[currpid];
     lptr = &ltable[ldes1];
-    kprintf("lock %d  : %d\n", lptr->lstate, lptr->ltype);
+    // kprintf("lock %d  : %d\n", lptr->lstate, lptr->ltype);
     /* check if lock is in deleted state*/
     if (isbadlock(ldes1) || 
         lptr->ltype == DELETED || 
@@ -101,7 +101,7 @@ int lock(int ldes1, int type, int priority)
 
     /* id free allocate directly */
     if (lptr->lstate == LUSED && lptr->ltype == LFREE) {
-        kprintf("Lock was free\n");
+        // kprintf("Lock was free\n");
         lptr->lockcnt = 1;
         lptr->ltype = type;
         lptr->lprio = priority;
@@ -119,13 +119,13 @@ int lock(int ldes1, int type, int priority)
         else
             pprio = pptr->pprio;
         mpid = checkpriority(ldes1, currpid, pprio);
-        kprintf("mpid: %d\n", mpid);
+        // kprintf("mpid: %d\n", mpid);
         if (mpid != -1) {
             /* priority inheritance case */
-            kprintf("->inheriting priority\n");
+            // kprintf("->inheriting priority\n");
             inheritprio (ldes1, mpid, currpid);
         }
-        kprintf("Write lock exists\n");
+        // kprintf("Write lock exists\n");
         pptr->pstate = PRWAIT;
         // pptr->plock[ldes1] = ldes1;
         lptr->lqwait[currpid] = currpid;
@@ -151,10 +151,10 @@ int lock(int ldes1, int type, int priority)
             mpid = checkpriority(ldes1, currpid, pprio);
             if (mpid != -1) {
                 /* priority inheritance case */
-                kprintf("->inheriting priority\n");
+                // kprintf("->inheriting priority\n");
                 inheritprio (ldes1, mpid, currpid);
             }
-            kprintf("Read lock exists\n");
+            // kprintf("Read lock exists\n");
             pptr->pstate = PRWAIT;
             // pptr->plock[ldes1] = ldes1;
             lptr->lqwait[currpid] = currpid;
@@ -171,7 +171,7 @@ int lock(int ldes1, int type, int priority)
         } else {
             /* check if there is another write process waiting with greater priority */
             if (allowread(ldes1, priority)) {
-                kprintf("Allowing read...\n");
+                // kprintf("Allowing read...\n");
                 lptr->lockcnt += 1;
                 lptr->lholdprocs[currpid] = currpid;
                 proctab[currpid].plock[ldes1] = READ;
@@ -187,10 +187,10 @@ int lock(int ldes1, int type, int priority)
                 mpid = checkpriority(ldes1, currpid, pprio);
                 if (mpid != -1) {
                     /* priority inheritance case */
-                    kprintf("->inheriting priority\n");
+                    // kprintf("->inheriting priority\n");
                     inheritprio (ldes1, mpid, currpid);
                 }
-                kprintf("Can't allow read\n");
+                // kprintf("Can't allow read\n");
                 pptr->pstate = PRWAIT;
                 // pptr->plock[ldes1] = ldes1;
                 lptr->lqwait[currpid] = currpid;

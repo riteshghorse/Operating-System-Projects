@@ -26,7 +26,7 @@ void get_lock(int ldes1)
     int newproc, newprio;
     lptr = &ltable[ldes1];
 
-    if (isbadpid(q[lptr->lqtail].qprev)) {
+    if (lptr->lqtail == lptr->lqhead) {
         kprintf("empty queue\n");
         lptr->ltype = LFREE;
         lptr->lstate = LFREE;
@@ -124,15 +124,15 @@ void updateholdprio (int ldes)
         if (lptr->lholdprocs[i] != BADPID) {
             
             proctab[i].pprio = lptr->lpprio;
-            kprintf("pprio: %d ",proctab[i].pprio);
-            kprintf(" -> %d ",proctab[i].pinh);
+            // kprintf("pprio: %d ",proctab[i].pprio);
+            // kprintf(" -> %d ",proctab[i].pinh);
             pptr = &proctab[i];
             
             mpid = checkpriority(ldes, i, pptr->pprio);
-            kprintf("mpid: %d\n", mpid);
+            // kprintf("mpid: %d\n", mpid);
             if (mpid != -1) {
                 /* priority inheritance case */
-                kprintf("->inheriting priority\n");
+                // kprintf("->inheriting priority\n");
                 inheritprio (ldes, mpid, i);
             }
         }
