@@ -26,15 +26,15 @@ void get_lock(int ldes1)
     int newproc, newprio;
     lptr = &ltable[ldes1];
 
-    if (lptr->lqtail == lptr->lqhead) {
+    if (q[lptr->lqhead].qnext == lptr->lqtail) {
         kprintf("empty queue\n");
         lptr->ltype = LFREE;
-        lptr->lstate = LFREE;
+        // lptr->lstate = LFREE;
         return;
     } else  {
         newproc = q[lptr->lqtail].qprev;
         newprio = q[newproc].qkey;
-        kprintf("release -> %d : %d\n", newproc, newprio);
+        // kprintf("release -> %d : %d\n", newproc, newprio);
         /*include check for time when many write requests*/
         newproc = scanwaittime(newproc, newprio, proctab[newproc].lqwaittime, ldes1);
         newproc = dequeue(newproc);
