@@ -44,4 +44,8 @@
         reader A: to release lock
 
 2.
-
+Since we are using a global semaphore that is used for writing the data to the buffer. 
+It may be the case that one reader thread acquired the lock and semaphore and updated the buffer.
+But since it is a counting semaphore, a writer may also get access to the to update the buffer by calling
+buffer_add. This function will execute from outside as well if you have a valid semaphore without even acquiring the lock.
+Thus a writer thread may make the buffer inconsistent.
