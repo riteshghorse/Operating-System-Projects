@@ -27,7 +27,7 @@ void get_lock(int ldes1)
     lptr = &ltable[ldes1];
 
     if (q[lptr->lqhead].qnext == lptr->lqtail) {
-        kprintf("empty queue\n");
+        // kprintf("empty queue\n");
         lptr->ltype = LFREE;
         // lptr->lstate = LFREE;
         return;

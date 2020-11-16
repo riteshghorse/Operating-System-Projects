@@ -92,7 +92,6 @@ int lock(int ldes1, int type, int priority)
     // kprintf("lock %d  : %d\n", lptr->lstate, lptr->ltype);
     /* check if lock is in deleted state*/
     if (isbadlock(ldes1) || 
-        lptr->ltype == DELETED || 
         lptr->lstate == LFREE) {
         kprintf("Error in locking\n");
         restore(ps);

@@ -263,15 +263,12 @@ void test1 ()
     pid2 = create(reader1, 2000, 20, "reader b", 2, "reader b", lck);
 
     resume(pid1);
-    kprintf("testval1 %d\n", testval);
 	sleep(1);
     resume(pid2);
-    kprintf("testval2 %d\n", testval);
     sleep (5);
     ldelete (lck);
     kill(pid1);
     kill(pid2);
-	kprintf("testval %d\n", testval);
     assert (testval == 90,"Test 1 FAILED\n");
     kprintf ("Test 1 PASSED!\n");
 }
@@ -795,8 +792,8 @@ int main( )
     test5();
     test6();
     test7();
-    // test8();
-    // test9();
+    test8();
+    test9();
     // shutdown();
 }
 

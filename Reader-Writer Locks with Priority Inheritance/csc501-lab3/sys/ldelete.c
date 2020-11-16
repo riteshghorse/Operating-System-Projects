@@ -19,7 +19,7 @@ int ldelete(int ldes)
     lptr = &ltable[ldes];
     lptr->lstate = LFREE;
     lptr->lockcnt = 0;
-    lptr->ltype = LFREE;
+    lptr->ltype = DELETED;
     if (nonempty(lptr->lqhead)) {
 		while ( (pid=getfirst(lptr->lqhead)) != EMPTY) {
 		    proctab[pid].lwaitret = DELETED;
