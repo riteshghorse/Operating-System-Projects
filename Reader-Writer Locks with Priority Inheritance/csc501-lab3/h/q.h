@@ -10,7 +10,7 @@
 #endif
 
 struct	qent	{		/* one for each process plus two for	*/
-				/* each list				*/
+/* each list				*/
 	int	qkey;		/* key on which the queue is ordered	*/
 	int	qnext;		/* pointer to next process or tail	*/
 	int	qprev;		/* pointer to previous process or head	*/

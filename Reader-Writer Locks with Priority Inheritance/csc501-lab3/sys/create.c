@@ -97,7 +97,7 @@ SYSCALL create(procaddr,ssize,priority,name,nargs,args)
 	*--saddr = 0;		/* %edi */
 	*pushsp = pptr->pesp = (unsigned long)saddr;
 
-	pptr->lwaitret = SYSERR;
+	pptr->lwaitret = OK;
 	for (j = 0; j < NLOCKS; ++j) {
 		pptr->plock[j] = LFREE;
 	}

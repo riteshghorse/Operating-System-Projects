@@ -29,20 +29,21 @@ void get_lock(int ldes1)
     if (q[lptr->lqhead].qnext == lptr->lqtail) {
         // kprintf("empty queue\n");
         lptr->ltype = LFREE;
-        // lptr->lstate = LFREE;
         return;
     } else  {
         newproc = q[lptr->lqtail].qprev;
         newprio = q[newproc].qkey;
         // kprintf("release -> %d : %d\n", newproc, newprio);
+        
         /*include check for time when many write requests*/
         newproc = scanwaittime(newproc, newprio, proctab[newproc].lqwaittime, ldes1);
         newproc = dequeue(newproc);
         ready(newproc, RESCHNO);
+        
         lptr->ltype = lptr->lqtype[newproc];
         lptr->lockcnt = 1;
         lptr->lprio = newprio;
-        // proctab[newproc].plock[ldes1] = 1;
+
         proctab[newproc].lwaitret = (OK);
         newproc = q[lptr->lqtail].qprev;
         newprio = q[newproc].qkey;
@@ -55,7 +56,6 @@ void get_lock(int ldes1)
 				lptr->lockcnt += 1;
 				lptr->lqwait[newproc] = BADPID;
                 lptr->lqtype[newproc] = LFREE;
-				// proctab[newproc].plock[ldes1] = 1;
 				proctab[newproc].lwaitret = (OK);
                 newproc = q[newproc].qprev;
 				newprio = q[newproc].qkey;
@@ -67,7 +67,7 @@ void get_lock(int ldes1)
 /**
  * update max pprio of lock for
  * processes in wait queue
- */
+**/
 void updatemaxprio (int ldes)
 {
     struct lentry *lptr;
@@ -84,9 +84,8 @@ void updatemaxprio (int ldes)
             maxprio = proctab[curr].pprio;
         curr = q[curr].qprev;
     }
-    // maxprio = max(maxprio, q[q[lptr->lqtail].qprev].qkey);
     lptr->lpprio = maxprio;
-    kprintf("in maxprio %d\n", maxprio);
+    // kprintf("in maxprio %d\n", maxprio);
 } 
 
 /**
@@ -101,7 +100,6 @@ int gethighprio(int ldes)
     lptr = &ltable[ldes];
     for (i = 0; i < NPROC; ++i) {
         if (lptr->lholdprocs[i] != BADPID) {
-
             // kprintf("gethigh  %d  %d\n", proctab[i].pstate, proctab[i].pinh);
             return (proctab[i].pinh);
         }
@@ -111,7 +109,7 @@ int gethighprio(int ldes)
 
 void updateholdprio (int ldes)
 {
-    struct lentry *lptr;
+    struct lentry *lptr;    
     struct pentry *pptr;
     int i, mpid, pprio;
     lptr = &ltable[ldes];
@@ -132,7 +130,6 @@ void updateholdprio (int ldes)
             // kprintf("mpid: %d\n", mpid);
             if (mpid != -1) {
                 /* priority inheritance case */
-                // kprintf("->inheriting priority\n");
                 inheritprio (ldes, mpid, i);
             }
         }
@@ -196,19 +193,12 @@ int releaseall(int numlocks, int ldes1,...)
             continue;
         } else if (ltable[currlock].ltype == READ) {
             lptr->lockcnt -= 1;
-            // proctab[currpid].plock[currlock] = LFREE;
-            // lptr->lqwait[currpid] = BADPID;
-            // lptr->lqtype[currpid] = LFREE;
             if (lptr->lockcnt == 0) {
                 get_lock (currlock);
             }
         } else {    /* write */
             lptr->lockcnt = 0;
             lptr->lprio = 0;
-            // lptr->lstate = LFREE;
-            // lptr->ltype = LFREE;
-            // lptr->lqwait[currpid] = BADPID;
-            // lptr->lqtype[currpid] = LFREE;
             get_lock (currlock);
         }
         lptr->lholdprocs[currpid] = BADPID;

@@ -93,11 +93,14 @@ int lock(int ldes1, int type, int priority)
     /* check if lock is in deleted state*/
     if (isbadlock(ldes1) || 
         lptr->lstate == LFREE) {
-        kprintf("Error in locking\n");
+        // kprintf("Error in locking\n");
         restore(ps);
         return(SYSERR);
     }
-
+    if (pptr->lwaitret == DELETED) {
+        restore(ps);
+        return(SYSERR);
+    }
     /* id free allocate directly */
     if (lptr->lstate == LUSED && lptr->ltype == LFREE) {
         // kprintf("Lock was free\n");
@@ -206,7 +209,7 @@ int lock(int ldes1, int type, int priority)
             }
         }
     } 
-    kprintf("Error encountered\n");
+    // kprintf("Error encountered\n");
     restore(ps);
     return(OK);
 }

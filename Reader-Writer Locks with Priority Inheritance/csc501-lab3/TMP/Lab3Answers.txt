@@ -1,0 +1,47 @@
+1. 
+    1. Random Boosting is another approach to address the issue of priority inversion. 
+        In this technique, the processess in the ready queue holding the locks are 
+        given a random boost in priority until they release the lock or 
+        complete their execution in critical section.
+    2. In priority inversion problem, a low priority process holding the lock keeps on executing 
+        even if there is an high priority process waiting for that lock in the queue. To compare the
+        results of semaphore and lock implementation I used the time to complete same set of task with
+        semaphore and locks. In semaphore, there was more waiting for the high priority process due to which
+        it took 9003 ms to complete which lock implementation only took 6005 ms, that is, 3 seconds less.
+        Below is the output indicating the same:
+
+        Test 3: test the semaphore implementation
+        -start writer, then sleep 1s. semaphore granted to write (prio 15)
+        writer: to acquire semaphore
+        writer: acquired semaphore, sleep 2s
+        -start reader A, then sleep 1s. reader A(prio 45) blocked on the semaphore
+        reader A: to acquire semaphore
+        -start reader B, then sleep 1s. reader A(prio 45) blocked on the semaphore
+        reader B: to acquire semaphore
+        reader B: acquired semaphore, sleep 1s
+        reader B: to release semaphore
+        writer: to release semaphore
+        reader A: acquired semaphore, sleep 1s
+        Total time: 9003
+        -kill reader A, then sleep 1s
+        -kill reader B, then sleep 1s
+
+        Test 3: test the lock implementation
+        -start writer, then sleep 1s. lock granted to write (prio 15)
+        writer: to acquire lock
+        writer: acquired lock, sleep 2s
+        -start reader A, then sleep 1s. reader A(prio 45) blocked on the lock
+        reader A: to acquire lock
+        -start reader B, then sleep 1s. reader B(prio 50) blocked on the lock
+        reader B: to acquire lock
+        reader B: acquired lock, sleep 1s
+        reader B: to release lock
+        Total time: 6005
+        -kill reader B, then sleep 1s
+        -kill reader A, then sleep 1s
+        writer: to release lock
+        reader A: acquired lock, sleep 1s
+        reader A: to release lock
+
+2.
+

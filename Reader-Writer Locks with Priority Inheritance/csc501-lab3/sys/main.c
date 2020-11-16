@@ -775,6 +775,7 @@ void test9 ()
 
     // Start reader B: Should get returned SYSERR since the lock it
     // uses was already deleted and a new lock is using that index
+    // kprintf("start\n");
     resume(rd2);
 
     // Start reader D that uses new lock
