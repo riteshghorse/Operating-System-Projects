@@ -1,6 +1,7 @@
 # Operating-System-Projects
 
 #### Run commands:
+Change to compile directory of a project and execute following commands:
 ```
 make clean
 make depend
